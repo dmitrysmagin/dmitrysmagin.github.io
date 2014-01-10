@@ -1,11 +1,19 @@
 body {
-    max-width: 45em;
+    max-width: 50em;
     min-width: 20em;
     margin: auto;
     padding: 1em;
-    font-family: 'Crimson Text', serif;
+    font-family: 'Book Antiqua', serif;
     font-size: 18px;
-    line-height: 1.4em;
+    line-height: 1.3em;
+}
+
+img {
+    max-width: 600px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -20,6 +28,7 @@ p {
     -ms-hyphens: auto;
     hyphens: auto;
     color: #333;
+    text-align: justify;
 }
 
 pre {

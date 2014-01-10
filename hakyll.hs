@@ -19,7 +19,7 @@ main = hakyll $ do
         compile compressCssCompiler
 
     -- Copy Files
-    match "files/*" $ do
+    match ("files/*" .||. "files/*/*") $ do
         route   idRoute
         compile copyFileCompiler
 
@@ -31,7 +31,7 @@ main = hakyll $ do
             >>= (externalizeUrls $ feedRoot feedConfiguration)
             >>= saveSnapshot "content"
             >>= (unExternalizeUrls $ feedRoot feedConfiguration)
-            >>= loadAndApplyTemplate "templates/disqus.html" (tagsCtx tags)
+            -- >>= loadAndApplyTemplate "templates/disqus.html" (tagsCtx tags)
             >>= loadAndApplyTemplate "templates/default.html" (tagsCtx tags)
             >>= relativizeUrls
 
