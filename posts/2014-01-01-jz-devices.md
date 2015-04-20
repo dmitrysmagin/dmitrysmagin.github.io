@@ -16,15 +16,23 @@ tags: mips, jz4740, jz4755, jz47xx
 * Gemei x760+
 * Dingoo A320/A330
 
+## JZ4750:
+
+* [Easy PC E700](http://habrahabr.ru/post/147221/)
+
 ## JZ4755:
 
 * GameBox
-* [Easy PC E700](http://habrahabr.ru/post/147221/)
 * [GameGadget](http://gamegadget.net/)
-* [Dingoo A320E/A360/A380](http://dingoo.hk/en_product.asp)
+* [Dingoo A320E/A360/A380](http://web.archive.org/web/20141104145735/http://www.dingoo.hk/en_product.asp)
 * [Ritmix RZX-50](http://www.ritmixrussia.ru/products/rzx-50)
+
+## JZ4760:
+
+* [Umido LN430](http://www.umidotech.com/game-machine/game-machine-LN430.html)
 
 ## JZ4770:
 
 * [NeoGeo X](http://neogeox.com/)
 * [GCW-Zero](http://www.gcw-zero.com/)
+* Ainol Novo 7 Paladin
