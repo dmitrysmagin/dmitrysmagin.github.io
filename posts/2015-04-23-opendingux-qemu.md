@@ -88,7 +88,8 @@ So, here's the scheme:
 > mkdosfs 512M
 > sudo mount 512M /mnt/
 > sudo cp rootfs.squashfs /mnt/rootfs.bin
-> sudo cp local/ /mnt/
+> sudo mkdir /mnt/local /mnt/local/apps /mnt/local/home /mnt/local/etc
+> # copy some more software to /mnt/local/apps and unmount
 > sudo umount /mnt/
 ````
 
