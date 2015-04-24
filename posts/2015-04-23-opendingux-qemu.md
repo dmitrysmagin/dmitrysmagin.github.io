@@ -70,7 +70,7 @@ all binaries compiled for Dingoo a320 OpenDingux could be runned as-is.
 ````
 > git clone -b opendingux-2012.11 https://github.com/dmitrysmagin/opendingux-buildroot.git
 > cd opendingux-buildroot
-> make a380_qemu_defconfig
+> make a380_defconfig
 > make
 ````
 
@@ -166,12 +166,21 @@ However, it's possible to use ssh or sftp and access from guest to host using yo
 host username and password. Thus it becomes quite easy to add or replace software in
 guest system.
 
-Note, that vice-versa, i.e. connecting from host to guest is not possible without
-special network settings.
-
 ````
 opendingux:/boot/local/home # sftp username@10.0.2.2
 ````
+
+Note, that vice-versa, i.e. connecting from host to guest is not possible without
+special network settings.
+
+![Running Qemu on Linux](/files/2015-04-23-opendingux-qemu/qemu-linux-02.png)
+
+![Sound card as AlsaMixer sees it. Note that sound is disabled on each boot,
+so run AlsaMixer to fix it.](/files/2015-04-23-opendingux-qemu/qemu-linux-03.png)
+
+![System Info reporting](/files/2015-04-23-opendingux-qemu/qemu-linux-04.png)
+
+![Let's play some Giana Sisters](/files/2015-04-23-opendingux-qemu/qemu-linux-05.png)
 
 ## Running qemu on Windows host
 
@@ -215,16 +224,27 @@ This trick works on Linux hosts as well and using
 'telnet localhost 5555' is possible to access to serial output but it's fairly
 overcomplicating since usual stdio is just fine.
 
+![Qemu runs on Windows and scales up gmenu2x](/files/2015-04-23-opendingux-qemu/qemu-win1.png)
+
+![System Info shows MIPS Malta processor](/files/2015-04-23-opendingux-qemu/qemu-win2.png)
+
+
 ## Setting up Putty to catch serial output from qemu
 
 To catch the redirected serial one would use a simple Putty application, download
 is [here](http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe)
 
 First run qemu, then putty. Set Host Name to localhost, Port to 5555, Connection type
-to telnet and Saved Sessions to serial-qemu. Press Save and you are done.
+to telnet and Saved Sessions to 'telnet' or any other name. Press Save and you are done.
 Optionally, Window -> Translation -> Remote character set could be set to UTF-8.
-Double click on serial-qemu and press any key on black screen.
+Double click on the 'telnet' and press any key on black screen.
 Normally, there would be some output.
+
+![Setting up Putty for qemu](/files/2015-04-23-opendingux-qemu/qemu-win3.png)
+
+![Character encoding](/files/2015-04-23-opendingux-qemu/qemu-win4.png)
+
+![Putty connected to qemu](/files/2015-04-23-opendingux-qemu/qemu-win5.png)
 
 ## Precompiled qemu binaries for Windows
 
