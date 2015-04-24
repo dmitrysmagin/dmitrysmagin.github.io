@@ -1,12 +1,12 @@
 ---
-title: Qemu: Using OpenDingux rootfs with Malta kernel in qemu
+title: Qemu: Using Dingoo a320 OpenDingux rootfs with Malta kernel in Qemu
 author: Dmitry Smagin
 published: 2015-04-23T00:00:00Z
 tags: Qemu, OpenDingux, Buildroot, Dingoo a320, GCW-Zero
 ---
 
 From the user's point of view this article could be named 'Dingoo a320 emulation in
-qemu' or 'OpenDingux emulation in Qemu' but both are incorrect.
+Qemu' or 'OpenDingux emulation in Qemu' but both are incorrect.
 
 What qemu does emulate is mips Malta board which exists in
 [silicon](http://www.linux-mips.org/wiki/MIPS_Malta) and can host several 32 and 64 bit
@@ -29,11 +29,15 @@ real devices.
 From the point of view of the text above, this is not even an OpenDingux emulation
 but rather a fair OpenDingux port for Malta board being run inside qemu.
 
+*Note: When 'rootfs' is mentioned here, it's about Dingoo a320 OpenDingux rootfs
+(cpu: mips32 r1 soft-float) if the contrary is not explicitely stated.*
+
 ## Building up a modified Malta kernel
 
 First a kernel should be prepared which is standard Malta kernel except for a small
 hack for cirrusfb driver. The following implies that you have mipsel toolchain located
-at /opt. Other changes include special defconfig options to accomodate closer to what
+at /opt otherwise download from [here](http://www.treewalker.org/opendingux/opendingux-toolchain.2012-06-16.tar.bz2) and unpack to /opt.
+Other changes include special defconfig options to accomodate closer to what
 OpenDingux expects from kernel.
 
 The most notable setting is:
