@@ -129,19 +129,17 @@ opendingux:/boot/local/home #
 ````
 
 Note that network setup given by '-net nic,model=e1000 -net user' is very simple and
-doesn't allow much.
+doesn't allow complicated interaction between guest and host.
 
 ````
-opendingux:/boot/local/home # ifconfig eth0 10.0.2.15
-e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
 opendingux:/boot/local/home # ifconfig
 eth0      Link encap:Ethernet  HWaddr 52:54:00:12:34:56
-          inet addr:10.0.2.15  Bcast:10.255.255.255  Mask:255.0.0.0
+          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          RX packets:2 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:2 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          RX bytes:1180 (1.1 KiB)  TX bytes:656 (656.0 B)
 
 lo        Link encap:Local Loopback
           inet addr:127.0.0.1  Mask:255.0.0.0
@@ -151,20 +149,14 @@ lo        Link encap:Local Loopback
           collisions:0 txqueuelen:0
           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
 
-opendingux:/boot/local/home # ping -c 2 10.0.2.2
-PING 10.0.2.2 (10.0.2.2): 56 data bytes
-64 bytes from 10.0.2.2: seq=0 ttl=255 time=8.758 ms
-64 bytes from 10.0.2.2: seq=1 ttl=255 time=0.679 ms
-
---- 10.0.2.2 ping statistics ---
-2 packets transmitted, 2 packets received, 0% packet loss
-round-trip min/avg/max = 0.679/4.718/8.758 ms
 opendingux:/boot/local/home #
 ````
 
-However, it's possible to use ssh or sftp and access from guest to host using your
-host username and password. Thus it becomes quite easy to add or replace software in
-guest system.
+DNS should be running at 10.0.2.3, so it's possible to access remote servers
+from guest using ordinary urls; such tools like ssh/sftp and wget work
+flawlessly.
+
+It's even possible to access from guest to host using ssh/sftp:
 
 ````
 opendingux:/boot/local/home # sftp username@10.0.2.2
@@ -223,6 +215,9 @@ qemu will not wait for connection.
 This trick works on Linux hosts as well and using
 'telnet localhost 5555' is possible to access to serial output but it's fairly
 overcomplicating since usual stdio is just fine.
+
+Network should work just like with Linux host, the only difference that it's not
+possible to ssh/sftp from guest to host via 10.0.2.2
 
 ![Qemu runs on Windows and scales up gmenu2x](/files/2015-04-23-opendingux-qemu/qemu-win1.png)
 
