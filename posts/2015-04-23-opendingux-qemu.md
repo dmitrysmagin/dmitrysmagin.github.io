@@ -60,7 +60,7 @@ it's a greatly reduced 'malta_defconfig' with some elements needed for OpenDingu
 After compilation is complete vmlinux is created and that what is needed for qemu. This
 kernel can run both modified Dingoo a320's rootfs and GCW-Zero's rootfs.
 
-## Building up rootfs with buildroot
+## Building up OpenDingux rootfs with buildroot
 
 Second a rootfs image is needed, and buildroot system is used for creating it.
 In this case a slightly modified OpenDingux rootfs for Dingoo a320 is used.
