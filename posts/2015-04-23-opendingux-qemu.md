@@ -30,23 +30,13 @@ From the point of view of the text above, this is not even an OpenDingux emulati
 but rather a fair OpenDingux port for Malta board being run inside qemu.
 
 *Note: When 'rootfs' is mentioned here, it's about Dingoo a320 OpenDingux rootfs
-(cpu: mips32 r1 soft-float) if the contrary is not explicitely stated.*
+(cpu: mips32 r1 soft-float) if the contrary is not explicitly stated.*
 
 ## Building up a modified Malta kernel
 
-First a kernel should be prepared which is standard Malta kernel except for a small
-hack for cirrusfb driver. The following implies that you have mipsel toolchain located
+First a kernel should be prepared which is a slightly modified Malta kernel.
+The following implies that you have mipsel toolchain located
 at /opt otherwise download from [here](http://www.treewalker.org/opendingux/opendingux-toolchain.2012-06-16.tar.bz2) and unpack to /opt.
-Other changes include special defconfig options to accomodate closer to what
-OpenDingux expects from kernel.
-
-The most notable setting is:
-
-````
-CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.bin root=/dev/loop0 video=cirrusfb:320x240-16@60"
-````
-
-This relates to rootfs placement on disk image we create later.
 
 ````
 > git clone -b jz-3.16-qemu  https://github.com/dmitrysmagin/linux.git
@@ -59,7 +49,8 @@ This relates to rootfs placement on disk image we create later.
 
 Despite the name 'gcw-qemu_defconfig' it has little to do with GCW-Zero hardware. In fact
 it's a greatly reduced 'malta_defconfig' with some elements needed for OpenDingux
-(e.g. using initramfs with tree.txt and mininit).
+(e.g. using initramfs with tree.txt and mininit) and a hack for cirrusfb driver to
+always use hardcoded resolution 320x240.
 
 After compilation is complete vmlinux is created and that what is needed for qemu. This
 kernel can run both modified Dingoo a320's rootfs and GCW-Zero's rootfs.
@@ -83,18 +74,31 @@ output/images/rootfs.squashfs
 
 ## Preparing a disk image
 
-Rootfs itself is of little use if no third-party programs are installed. Besides the kernel
-command line implies that rootfs.bin itself is located on other disk.
-So, here's the scheme:
+Historically Dingux and OpenDingux ran on external sd-card of Dingoo a320 allowing
+a dualboot between native OS and Dingux/OpenDingux. For simplification kernel and
+rootfs images were placed on FAT partition of the sd-card and additional software
+went to 'local' directory, thus typical dir structure looked like: local/bin,
+local/etc, local/home, local/sbin.
+
+When booting Dingux/OpenDingux sd-card partition was mounted as /boot, then rootfs
+was mounted on / (and rootfs had an additional symlink /usr/local => /boot/local).
+
+To emulate this behavior a disk image with similar layout must be created.
 
 ````
 > dd if=/dev/zero of=512M bs=1M count=512
 > mkdosfs 512M
 > sudo mount 512M /mnt/
-> sudo cp rootfs.squashfs /mnt/rootfs.bin
+> sudo cp rootfs.squashfs /mnt/
 > sudo mkdir /mnt/local /mnt/local/apps /mnt/local/home /mnt/local/etc
 > # copy some more software to /mnt/local/apps and unmount
 > sudo umount /mnt/
+````
+
+Note that kernel is compiled with the following built-in command line:
+
+````
+CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60"
 ````
 
 ## Running qemu on Linux host
@@ -131,43 +135,6 @@ immediately appear which ends with login prompt. Type 'root' to log in.
 ````
 opendingux:/boot/local/home #
 ````
-
-Note that network setup given by '-net nic,model=e1000 -net user' is very simple and
-doesn't allow complicated interaction between guest and host.
-
-````
-opendingux:/boot/local/home # ifconfig
-eth0      Link encap:Ethernet  HWaddr 52:54:00:12:34:56
-          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:2 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:2 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:1180 (1.1 KiB)  TX bytes:656 (656.0 B)
-
-lo        Link encap:Local Loopback
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          UP LOOPBACK RUNNING  MTU:65536  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:0
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-opendingux:/boot/local/home #
-````
-
-DNS should be running at 10.0.2.3, so it's possible to access remote servers
-from guest using ordinary urls; such tools like ssh/sftp and wget work
-flawlessly.
-
-It's even possible to access from guest to host using ssh/sftp:
-
-````
-opendingux:/boot/local/home # sftp username@10.0.2.2
-````
-
-Note, that vice-versa, i.e. connecting from host to guest is not possible without
-special network settings.
 
 ![Running Qemu on Linux](/files/2015-04-23-opendingux-qemu/qemu-linux-02.png)
 
@@ -220,9 +187,6 @@ This trick works on Linux hosts as well and using
 'telnet localhost 5555' is possible to access to serial output but it's fairly
 overcomplicating since usual stdio is just fine.
 
-Network should work just like with Linux host, the only difference that it's not
-possible to ssh/sftp from guest to host via 10.0.2.2
-
 ![Qemu runs on Windows and scales up gmenu2x](/files/2015-04-23-opendingux-qemu/qemu-win1.png)
 
 ![System Info shows MIPS Malta processor](/files/2015-04-23-opendingux-qemu/qemu-win2.png)
@@ -244,6 +208,65 @@ Normally, there would be some output.
 ![Character encoding](/files/2015-04-23-opendingux-qemu/qemu-win4.png)
 
 ![Putty connected to qemu](/files/2015-04-23-opendingux-qemu/qemu-win5.png)
+
+
+## Network operation on Linux and Windows hosts
+
+On both hosts network is run in user mode by passing '-net nic,model=e1000 -nic user'
+switches. This is so called 'user' mode when guest and host systems are seen as
+one entity so compicated routing and host-guest interaction is impossible.
+
+However, it's enought to interact with remote machines.
+
+````
+opendingux:/boot/local/home # ifconfig
+eth0      Link encap:Ethernet  HWaddr 52:54:00:12:34:56
+          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:2 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:2 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:1180 (1.1 KiB)  TX bytes:656 (656.0 B)
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+opendingux:/boot/local/home #
+````
+
+DNS should be running at 10.0.2.3, so it's possible to access remote servers
+from guest using ordinary urls; such tools like ssh/sftp and wget work
+flawlessly.
+
+It's even possible to access from guest to host using ssh/sftp, but this works
+on Linux hosts only:
+
+````
+opendingux:/boot/local/home # sftp username@10.0.2.2
+````
+
+Note, that vice-versa, i.e. connecting from host to guest is not possible without
+special network settings.
+
+
+## Using host directory as a virtual disk
+
+To facilitate file sharing between host and guest qemu has a special option
+to mount host dir as virtual FAT partition. This is especially useful for Windows
+host which doesn't have tools to manipulate fs images:
+
+````
+-hdb fat:rw:dirname
+````
+
+This has a restriction though: directory has to fit to FAT16 capacity (~ 516.06 MB).
+After booting this directory will be visible as /dev/sdb1 device mounted on /media/sdb1
+visible from gmenu2x Explorer or DinguxCommander.
 
 ## Precompiled qemu binaries for Windows
 
