@@ -1,5 +1,5 @@
 ---
-title: Rimix RZX-50: Исследование стандартной прошивки
+title: Ritmix RZX-50: Исследование стандартной прошивки
 author: Dmitry Smagin
 published: 2014-01-10T00:00:00Z
 tags: Ritmix RZX-50, Ingenic JZ4755
