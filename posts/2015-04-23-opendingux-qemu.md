@@ -38,14 +38,14 @@ First a kernel should be prepared which is a slightly modified Malta kernel.
 The following implies that you have mipsel toolchain located
 at /opt otherwise download from [here](http://www.treewalker.org/opendingux/opendingux-toolchain.2012-06-16.tar.bz2) and unpack to /opt.
 
-````
+```
 > git clone -b jz-3.16-qemu  https://github.com/dmitrysmagin/linux.git
 > cd linux
 > export ARCH=mips
 > export CROSS_COMPILE=/opt/opendingux-toolchain/usr/bin/mipsel-linux-
 > make gcw0-qemu_defconfig
 > make
-````
+```
 
 Despite the name 'gcw-qemu_defconfig' it has little to do with GCW-Zero hardware. In fact
 it's a greatly reduced 'malta_defconfig' with some elements needed for OpenDingux
@@ -62,12 +62,12 @@ In this case a slightly modified OpenDingux rootfs for Dingoo a320 is used.
 This means that it can also be used with Dingoo a380, Ritmix RZX50 and qemu, and
 all binaries compiled for Dingoo a320 OpenDingux could be runned as-is.
 
-````
+```
 > git clone -b opendingux-2012.11 https://github.com/dmitrysmagin/opendingux-buildroot.git
 > cd opendingux-buildroot
 > make a380_defconfig
 > make
-````
+```
 
 After some hours of work if no error, the file we need will be located at
 output/images/rootfs.squashfs
@@ -85,7 +85,7 @@ was mounted on / (and rootfs had an additional symlink /usr/local => /boot/local
 
 To emulate this behavior a disk image with similar layout must be created.
 
-````
+```
 > dd if=/dev/zero of=512M bs=1M count=512
 > mkdosfs 512M
 > sudo mount 512M /mnt/
@@ -93,27 +93,27 @@ To emulate this behavior a disk image with similar layout must be created.
 > sudo mkdir /mnt/local /mnt/local/apps /mnt/local/home /mnt/local/etc
 > # copy some more software to /mnt/local/apps and unmount
 > sudo umount /mnt/
-````
+```
 
 Note that kernel is compiled with the following built-in command line:
 
-````
+```
 CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60"
-````
+```
 
 ## Running qemu on Linux host
 
 Qemu should be already installed on your system otherwise do
 
-````
+```
 > sudo apt-get install qemu
-````
+```
 
 At the time of writing, the latest version is 2.2.0 but no harm if an older
 one is used (at least 1.3.0 worked fine).
 Now it's time to burst into action. Typical script to run qemu would look like:
 
-````
+```
 #!/bin/sh
 
 MACHINE="-M malta -m 256"
@@ -124,17 +124,17 @@ SERIAL="-serial stdio -monitor none"
 
 qemu-system-mipsel $MACHINE $FIRMWARE $HARDWARE $NETWORK $SERIAL
 
-````
+```
 
-The explanation is obvious: '-M malta -m 256' for Malta board with 256 megabytes of RAM.
-'-kernel vmlinux -hda 512M' for the generated kernel and disk image,
-'-serial stdio' for redirecting serial output to console, other settings for enabling
+The explanation is obvious: `-M malta -m 256` for Malta board with 256 megabytes of RAM.
+`-kernel vmlinux -hda 512M` for the generated kernel and disk image,
+`-serial stdio` for redirecting serial output to console, other settings for enabling
 sound, usb keyboard and network card. If no error, the kernel booting log will
 immediately appear which ends with login prompt. Type 'root' to log in.
 
-````
+```
 opendingux:/boot/local/home #
-````
+```
 
 ![Running Qemu on Linux](/files/2015-04-23-opendingux-qemu/qemu-linux-02.png)
 
@@ -153,7 +153,7 @@ way. Latest Qemu 2.2.0 binary could be downloaded
 
 Here's the example of run.bat:
 
-````
+```
 @CLS
 set PORTFWD=hostfwd=tcp::21-:21,hostfwd=tcp::22-:22,hostfwd=tcp::23-:23
 
@@ -166,25 +166,25 @@ set SERIAL=-serial telnet:127.0.0.1:5555,server,nowait
 set SETTINGS=%MACHINE% %FIRMWARE% %HARDWARE% %NETWORK% %SERIAL%
 
 qemu-system-mipselw -L BIOS %SETTINGS%
-````
+```
 
-Note that the combination of '-sdl -usbdevice keyboard -k en_us' is very important. If you
+Note that the combination of `-sdl -usbdevice keyboard -k en-us` is very important. If you
 omit one part you'll happen to have non-working keyboard. Why so? Normally one would
-use '-usbdevice keyboard' but for some reason arrow-keys are not working. If qemu version
-is lower than 2.0.0 then adding '-k en_us' cures this bug. That's not the case for 2.0.0
+use `-usbdevice keyboard` but for some reason arrow-keys are not working. If qemu version
+is lower than 2.0.0 then adding `-k en-us` cures this bug. That's not the case for 2.0.0
 and above because now gtk is used for output and arrow-keys are not working again. This
-is where adding '-sdl' helps the situation.
+is where adding `-sdl` helps the situation.
 
 The other annoying thing is Windows console (cmd.exe) which doesn't work right with
 escape sequences. Moreover, SDL.dll completely hijacks the stdio output and redirects
 it to a file stdio.txt, so using -serial stdio is impossible.
 
-That's why a special redirection is used: '-serial telnet:127.0.0.1:5555,server,nowait'
+That's why a special redirection is used: `-serial telnet:127.0.0.1:5555,server,nowait`
 which means that serial will be fed to localhost on port 5555 using qemu as server and
 qemu will not wait for connection.
 
 This trick works on Linux hosts as well and using
-'telnet localhost 5555' is possible to access to serial output but it's fairly
+`telnet localhost 5555` is possible to access to serial output but it's fairly
 overcomplicating since usual stdio is just fine.
 
 ![Qemu runs on Windows and scales up gmenu2x](/files/2015-04-23-opendingux-qemu/qemu-win1.png)
@@ -218,7 +218,7 @@ one entity so compicated routing and host-guest interaction is impossible.
 
 However, it's enought to interact with remote machines.
 
-````
+```
 opendingux:/boot/local/home # ifconfig
 eth0      Link encap:Ethernet  HWaddr 52:54:00:12:34:56
           inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
@@ -237,7 +237,7 @@ lo        Link encap:Local Loopback
           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
 
 opendingux:/boot/local/home #
-````
+```
 
 DNS should be running at 10.0.2.3, so it's possible to access remote servers
 from guest using ordinary urls; such tools like ssh/sftp and wget work
@@ -246,9 +246,9 @@ flawlessly.
 It's even possible to access from guest to host using ssh/sftp, but this works
 on Linux hosts only:
 
-````
+```
 opendingux:/boot/local/home # sftp username@10.0.2.2
-````
+```
 
 Note, that vice-versa, i.e. connecting from host to guest is not possible without
 special network settings.
@@ -260,9 +260,9 @@ To facilitate file sharing between host and guest qemu has a special option
 to mount host dir as virtual FAT partition. This is especially useful for Windows
 host which doesn't have tools to manipulate fs images:
 
-````
+```
 -hdb fat:rw:dirname
-````
+```
 
 This has a restriction though: directory has to fit to FAT16 capacity (~ 516.06 MB).
 After booting this directory will be visible as /dev/sdb1 device mounted on /media/sdb1
