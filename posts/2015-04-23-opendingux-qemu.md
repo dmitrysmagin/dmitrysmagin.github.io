@@ -1,18 +1,17 @@
 ---
-title: Qemu: Using Dingoo a320 OpenDingux rootfs with Malta kernel in Qemu
+title: Dingoo a320 OpenDingux emulation in Qemu
 author: Dmitry Smagin
 published: 2015-04-23T00:00:00Z
-tags: Qemu, OpenDingux, Buildroot, Dingoo a320, GCW-Zero
+tags: Qemu, OpenDingux, Buildroot, Dingoo a320, GCW Zero
 ---
 
-From the user's point of view this article could be named 'Dingoo a320 emulation in
-Qemu' or 'OpenDingux emulation in Qemu' but both are incorrect.
+The title of this article is not quite correct.
 
 What qemu does emulate is mips Malta board which exists in
 [silicon](http://www.linux-mips.org/wiki/MIPS_Malta) and can host several 32 and 64 bit
 mips-compatible processors both BIG or LITTLE endian. Hardware-wise it is completely
 different from jz47xx SoCs with different memory map and additional hardware.
-This means that only Malta kernel could be used in qemu and not Dingoo a320 or GCW-Zero one.
+This means that only Malta kernel could be used in qemu and not Dingoo a320 or GCW Zero one.
 Of course, this kernel's settings could be tweaked according to the situation.
 
 At the same time no one forbids to use any rootfs with Malta kernel and Dingoo a320's
@@ -47,13 +46,30 @@ at /opt otherwise download from [here](http://www.treewalker.org/opendingux/open
 > make
 ```
 
-Despite the name 'gcw-qemu_defconfig' it has little to do with GCW-Zero hardware. In fact
-it's a greatly reduced 'malta_defconfig' with some elements needed for OpenDingux
-(e.g. using initramfs with tree.txt and mininit) and a hack for cirrusfb driver to
-always use hardcoded resolution 320x240.
+Despite the name 'gcw-qemu_defconfig' it has little to do with GCW Zero hardware. In fact
+it's a greatly reduced 'malta_defconfig' with some elements needed for OpenDingux:
 
-After compilation is complete vmlinux is created and that what is needed for qemu. This
-kernel can run both modified Dingoo a320's rootfs and GCW-Zero's rootfs.
+- [Patch](https://github.com/dmitrysmagin/linux-gcw0/commit/0a2b8cb9e20354821c4830b1116d0dfb87afa8e1)
+which allows i8042 serial controller to properly enable on emulated
+Malta board. This makes AT standard keyboard work in qemu.
+For some reason this is missing from mainline kernel, see related
+[discussion](http://patchwork.linux-mips.org/patch/6419/).  
+- [Patch](https://github.com/dmitrysmagin/linux-gcw0/commit/b3570be20f77fad5da056c68ed9379fb59997e40)
+that makes cirrusfb driver behave closer to Dingoo a320 driver.
+Double buffering and vsync are not supported but
+applications that rely on them will run just fine. If an application
+requests a resolution that is different from 320x240, cirrusfb
+just sets requested resolution as-is without rescaling.  
+- Using initramfs with device tree in tree.txt and
+[mininit](https://github.com/pcercuei/mininit).  
+- Unused hardware is eliminated from defconfig, some other drivers are
+built statically.
+- Kernel command line is hardcoded to `CONFIG_CMDLINE="boot=/dev/sda
+loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60`
+
+After compilation is complete the kernel image is located at current
+directory: ./vmlinux
+This kernel can run both modified Dingoo a320's rootfs and GCW Zero's rootfs.
 
 ## Building up OpenDingux rootfs with buildroot
 
@@ -118,7 +134,7 @@ Now it's time to burst into action. Typical script to run qemu would look like:
 
 MACHINE="-M malta -m 256"
 FIRMWARE="-kernel vmlinux -hda 512M"
-HARDWARE="-sdl -soundhw ac97 -usbdevice keyboard -k en-us -rtc clock=vm"
+HARDWARE="-sdl -soundhw ac97 -k en-us -rtc clock=vm"
 NETWORK="-net nic,model=e1000 -net user"
 SERIAL="-serial stdio -monitor none"
 
@@ -129,7 +145,7 @@ qemu-system-mipsel $MACHINE $FIRMWARE $HARDWARE $NETWORK $SERIAL
 The explanation is obvious: `-M malta -m 256` for Malta board with 256 megabytes of RAM.
 `-kernel vmlinux -hda 512M` for the generated kernel and disk image,
 `-serial stdio` for redirecting serial output to console, other settings for enabling
-sound, usb keyboard and network card. If no error, the kernel booting log will
+sound, keyboard and network card. If no error, the kernel booting log will
 immediately appear which ends with login prompt. Type 'root' to log in.
 
 ```
@@ -159,7 +175,7 @@ set PORTFWD=hostfwd=tcp::21-:21,hostfwd=tcp::22-:22,hostfwd=tcp::23-:23
 
 set MACHINE=-M malta -m 256
 set FIRMWARE=-kernel vmlinux -hda 512M
-set HARDWARE=-sdl -soundhw ac97 -usbdevice keyboard -k en-us -rtc clock=vm
+set HARDWARE=-sdl -soundhw ac97 -k en-us -rtc clock=vm
 set NETWORK=-net nic,model=e1000 -net user,%PORTFWD%
 set SERIAL=-serial telnet:127.0.0.1:5555,server,nowait
 
@@ -168,12 +184,10 @@ set SETTINGS=%MACHINE% %FIRMWARE% %HARDWARE% %NETWORK% %SERIAL%
 qemu-system-mipselw -L BIOS %SETTINGS%
 ```
 
-Note that the combination of `-sdl -usbdevice keyboard -k en-us` is very important. If you
-omit one part you'll happen to have non-working keyboard. Why so? Normally one would
-use `-usbdevice keyboard` but for some reason arrow-keys are not working. If qemu version
-is lower than 2.0.0 then adding `-k en-us` cures this bug. That's not the case for 2.0.0
-and above because now gtk is used for output and arrow-keys are not working again. This
-is where adding `-sdl` helps the situation.
+Note that the combination of `-sdl -k en-us` is very important. If you
+omit one part you'll happen to have non-working arrow keys. `-sdl` option
+instructs to use SDL for video and input (default is GTK) and `-k en-us`
+forces US key layout.
 
 The other annoying thing is Windows console (cmd.exe) which doesn't work right with
 escape sequences. Moreover, SDL.dll completely hijacks the stdio output and redirects
