@@ -138,7 +138,80 @@ Save an alternate configuration file
 > $ ./ct-ng build
 ```
 
-May be problems with linux-headers (wrong urls)
+Attention! There may be problems with linux-headers (wrong urls) etc.
+
+## 6. Adding libraries
+
+After compilation is done you'll get the toolchain in /opt/gcw-toolchain, but this is a minimalistic toolchain without additional libraries like SDL, mikmod etc.
+
+The right way to populate the toolchain with libraries is to compile them from sources, but in fact all headers and libraries could be just copied from ready-to-use linux toolchain.
+
+Copy the following text to copy_libs.sh, place it to /opt and run.
+
+````
+#!/bin/sh
+
+# Assume we are in /opt and GCW Zero toolchain is compiled to
+# /opt/gcw0-toolchain
+
+wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2
+
+mkdir -p tmp
+tar -xf opendingux-gcw0-toolchain.2014-08-20.tar -C tmp
+
+CP="cp -aRn"
+SRC=tmp/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
+DST=gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
+
+# Perhaps not needed
+$CP $SRC/../lib $DST
+$CP $SRC/lib $DST
+
+# Copy headers and libs
+$CP $SRC/usr/include $DST/usr
+$CP $SRC/usr/lib $DST/usr
+
+# Copy *-config scripts
+$CP $SRC/usr/bin/*-config $DST/../../bin
+
+# Create symlinks
+LN="ln -sf"
+NAME=mipsel-gcw0-linux-uclibc-
+LINK=mipsel-linux-
+
+cd gcw0-toolchain/usr/bin
+$LN ${NAME}addr2line	${LINK}addr2line
+$LN ${NAME}ar		${LINK}ar
+$LN ${NAME}as		${LINK}as
+$LN ${NAME}c++	${LINK}c++
+$LN ${NAME}c++filt	${LINK}c++filt
+$LN ${NAME}cc		${LINK}cc
+$LN ${NAME}cpp	${LINK}cpp
+$LN ${NAME}elfedit	${LINK}elfedit
+$LN ${NAME}g++	${LINK}g++
+$LN ${NAME}gcc-5.2.0	${LINK}gcc-5.2.0
+$LN ${NAME}gcc-ar	${LINK}gcc-ar
+$LN ${NAME}gcc-nm	${LINK}gcc-nm
+$LN ${NAME}gcc-ranlib	${LINK}gcc-ranlib
+$LN ${NAME}gcc	${LINK}gcc
+$LN ${NAME}gcov-tool	${LINK}gcov-tool
+$LN ${NAME}gcov	${LINK}gcov
+$LN ${NAME}gprof	${LINK}gprof
+$LN ${NAME}ld		${LINK}ld
+$LN ${NAME}ld.bfd	${LINK}ld.bfd
+$LN ${NAME}nm		${LINK}nm
+$LN ${NAME}objcopy	${LINK}objcopy
+$LN ${NAME}objdump	${LINK}objdump
+$LN ${NAME}ranlib	${LINK}ranlib
+$LN ${NAME}readelf	${LINK}readelf
+$LN ${NAME}size	${LINK}size
+$LN ${NAME}strings	${LINK}strings
+$LN ${NAME}strip	${LINK}strip
+$LN ${NAME}ldd	${LINK}ldd
+$LN ${NAME}populate	${LINK}populate
+
+cd ../..
+````
 
 
 
