@@ -117,9 +117,9 @@ binutils version=2.25.1 (default)<br>
 **C compiler**<br>
 gcc version=5.2.0 (default)<br>
 `[*] C++`<br>
-`[*] Java`<br>
-`[ ] Enable GRAPHITE loop optimizations`<br>
-`[ ] Enable LTO`<br>
+`[ ] Java`<br>
+`[*] Enable GRAPHITE loop optimizations`<br>
+`[*] Enable LTO`<br>
 
 **C library**<br>
 C library=uclibc<br>
@@ -157,9 +157,9 @@ Copy the following text to copy_libs.sh, place it to /opt and run.
 wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2
 
 mkdir -p tmp
-tar -xf opendingux-gcw0-toolchain.2014-08-20.tar -C tmp
+tar -xf opendingux-gcw0-toolchain.2014-08-20.tar.bz2 -C tmp
 
-CP="cp -aRn"
+CP="cp -aR"
 SRC=tmp/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
 DST=gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
 
