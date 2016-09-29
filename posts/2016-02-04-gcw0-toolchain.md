@@ -159,7 +159,7 @@ wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2
 mkdir -p tmp
 tar -xf opendingux-gcw0-toolchain.2014-08-20.tar.bz2 -C tmp
 
-CP="cp -aR"
+CP="cp -aRn"
 SRC=tmp/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
 DST=gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
 
@@ -170,6 +170,9 @@ $CP $SRC/lib $DST
 # Copy headers and libs
 $CP $SRC/usr/include $DST/usr
 $CP $SRC/usr/lib $DST/usr
+
+# Fix 'unresolved reference to __tls_get_addr()'
+rm -f $DST/usr/lib/libstdc++*
 
 # Copy *-config scripts
 $CP $SRC/usr/bin/*-config $DST/../../bin
@@ -183,19 +186,18 @@ cd gcw0-toolchain/usr/bin
 $LN ${NAME}addr2line	${LINK}addr2line
 $LN ${NAME}ar		${LINK}ar
 $LN ${NAME}as		${LINK}as
-$LN ${NAME}c++	${LINK}c++
+$LN ${NAME}c++		${LINK}c++
 $LN ${NAME}c++filt	${LINK}c++filt
 $LN ${NAME}cc		${LINK}cc
-$LN ${NAME}cpp	${LINK}cpp
+$LN ${NAME}cpp		${LINK}cpp
 $LN ${NAME}elfedit	${LINK}elfedit
-$LN ${NAME}g++	${LINK}g++
-$LN ${NAME}gcc-5.2.0	${LINK}gcc-5.2.0
+$LN ${NAME}g++		${LINK}g++
 $LN ${NAME}gcc-ar	${LINK}gcc-ar
 $LN ${NAME}gcc-nm	${LINK}gcc-nm
 $LN ${NAME}gcc-ranlib	${LINK}gcc-ranlib
-$LN ${NAME}gcc	${LINK}gcc
+$LN ${NAME}gcc		${LINK}gcc
 $LN ${NAME}gcov-tool	${LINK}gcov-tool
-$LN ${NAME}gcov	${LINK}gcov
+$LN ${NAME}gcov		${LINK}gcov
 $LN ${NAME}gprof	${LINK}gprof
 $LN ${NAME}ld		${LINK}ld
 $LN ${NAME}ld.bfd	${LINK}ld.bfd
@@ -204,10 +206,10 @@ $LN ${NAME}objcopy	${LINK}objcopy
 $LN ${NAME}objdump	${LINK}objdump
 $LN ${NAME}ranlib	${LINK}ranlib
 $LN ${NAME}readelf	${LINK}readelf
-$LN ${NAME}size	${LINK}size
+$LN ${NAME}size		${LINK}size
 $LN ${NAME}strings	${LINK}strings
 $LN ${NAME}strip	${LINK}strip
-$LN ${NAME}ldd	${LINK}ldd
+$LN ${NAME}ldd		${LINK}ldd
 $LN ${NAME}populate	${LINK}populate
 
 cd ../..
