@@ -7,9 +7,9 @@ tags: Ritmix RZX-50, Dingux
 
 Понимаю, что уже крайне поздно, однако, считаю нужным опубликовать последнюю версию модифицированной официальной прошивки для Ritmix RZX-50.
 
-[Прошивка](https://www.sendspace.com/file/rsyxnj)
+[Прошивка](https://yadi.sk/d/2puQQMIW32yZqF)
 
-[Эмуляторы](https://www.sendspace.com/file/zga81d)
+[Эмуляторы](https://yadi.sk/d/njB7qB1M32yaPn)
 
 [Исходники ядра](https://github.com/dmitrysmagin/a380_kernel/tree/jz-2.6.24)
 
