@@ -159,7 +159,7 @@ wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2
 mkdir -p tmp
 tar -xf opendingux-gcw0-toolchain.2014-08-20.tar.bz2 -C tmp
 
-CP="cp -aRn"
+CP="cp -dR"
 SRC=tmp/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
 DST=gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
 
