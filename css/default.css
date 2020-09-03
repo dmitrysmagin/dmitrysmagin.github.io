@@ -1,9 +1,9 @@
 body {
-    max-width: 50em;
+    max-width: 60em;
     min-width: 20em;
     margin: auto;
     padding: 1em;
-    font-family: 'Book Antiqua', serif;
+    font-family: Lato, Helvetica, Arial, sans-serif;
     font-size: 18px;
     line-height: 1.3em;
 }
@@ -105,3 +105,29 @@ body>footer {
     border-top: 1px solid black;
     margin-top: 10px;
 }
+
+#content, #articles {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: 0;
+    margin-left: 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+}
+
+#content table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+#content table th, #content table td {
+    padding: 6px 13px;
+    border: 1px solid #c3c8cc;
+}
+
+#content table tr:nth-child(2n),
+#content table thead tr {
+    background-color: #d4d9dd;
+}   

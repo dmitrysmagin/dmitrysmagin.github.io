@@ -3,7 +3,8 @@
     <head>
         <title>OpenDingux development for jz4755 devices</title>
         <meta charset="utf-8" />
-        <link rel="stylesheet" type="text/css" href="./css/default.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
     </head>
     <body>
         <header>
@@ -13,8 +14,8 @@
             </hgroup>
         </header>
             <nav>
-                <a href="./index.html">Home</a>
-                <a href="./posts.html">Articles</a>
+                <a href="../index.html">Home</a>
+                <a href="../posts.html">Articles</a>
             </nav>
 
         <div id="content"></div>
@@ -26,5 +27,18 @@
                 Commons Attribution-ShareAlike 3.0 Unported License</a>.
             </p>
         </footer>
+
+        <script src="../js/marked.min.js"></script>
+        <script>
+            function showMD(mdPath) {
+                fetch(mdPath).then((response) => {
+                    response.text().then((text) => {
+                        document.getElementById('content').innerHTML = marked(text);
+                    });
+                });
+            }
+
+            showMD('./2016-02-04-gcw0-toolchain.md');
+        </script>
     </body>
 </html>
