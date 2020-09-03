@@ -1,9 +1,4 @@
----
-title: Dingoo a320 OpenDingux emulation in Qemu
-author: Dmitry Smagin
-published: 2015-04-23T00:00:00Z
-tags: Qemu, OpenDingux, Buildroot, Dingoo a320, GCW Zero
----
+# Dingoo a320: OpenDingux emulation in Qemu
 
 The title of this article is not quite correct.
 

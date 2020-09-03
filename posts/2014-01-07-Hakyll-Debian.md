@@ -1,9 +1,4 @@
----
-title: Установка Hakyll на Debian
-author: Antony Pavlov
-published: 2014-01-07T19:03:00Z
-tags: Hakyll, pandoc, debian, rsync, apache, markdown
----
+# Установка Hakyll на Debian
 
 # Введение #
 

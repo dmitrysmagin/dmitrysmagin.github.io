@@ -1,9 +1,4 @@
----
-title: Ritmix RZX-50: Исследование стандартной прошивки
-author: Dmitry Smagin
-published: 2014-01-10T00:00:00Z
-tags: Ritmix RZX-50, Ingenic JZ4755
----
+# Ritmix RZX-50: Исследование стандартной прошивки
 
 Стандартные прошивки Ritmix RZX-50 и Dingoo A380 основаны на Dingux для
 Dingoo A320, в основе которой, в свою очередь, лежит ядро linux 2.6.24.3
