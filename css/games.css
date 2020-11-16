@@ -1,0 +1,53 @@
+body {
+    max-width: 60em;
+    min-width: 20em;
+    margin: auto;
+    padding: 1em;
+    font-family: Lato, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.4em;
+    background: #eee;
+}
+
+img {
+    max-width: 320px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.panel {
+    display: flex;
+    justify-content: center;
+    background-color: white;
+}
+
+.panel_column {
+    flex-direction: column;
+}
+
+.left_panel {
+    border: 1px solid lightgray;
+}
+
+/* added to left_panel */
+.panel_column > .left_panel {
+    white-space: nowrap;
+    overflow-x: scroll;
+}
+
+.panel_column > .left_panel > img {
+    display: inline-block;
+}
+
+.left_panel > img {
+    margin: 10px;
+}
+
+.right_panel {
+    border: 1px solid lightgray;
+}
+
+.description {
+    padding: 10px;
+}

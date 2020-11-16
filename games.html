@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="./css/games.css" />
+    </head>
+    <body>
+        <header>
+            <hgroup>
+                <h1>Games</h1>
+            </hgroup>
+        </header>
+
+        <div>
+        <div class="panel">
+            <div class="left_panel">
+                <img src="./img/lastmission01.png"/>
+                <img src="./img/lastmission02.png"/>
+                <img src="./img/lastmission03.png"/>
+                <img src="./img/lastmission04.png"/>
+                <img src="./img/lastmission05.png"/>
+            </div>
+            <div class="right_panel description">
+                <p>
+                    The Last Mission is a side-view arcade game without scrolling (viewpoint moves from screen to screen)
+                    with map of big dimensions. The game takes its inspiration from games such as Underwurlde and Starquake.
+                </p>
+                <p>
+                    You control a tank-like robot which can be divided in two: you rotate caterpillar and head-cannon, and
+                    the head part can fly off on its own. However, the head can only survive separately for a short amount
+                    of time, and your restart position is dictated by the location of the body, even if the head has moved
+                    forward through further screens. Therefore, the difficulty of the game was in making it possible to advance
+                    with the assembled robot's two parts.
+                </p>
+                <p>
+                    <b>Authors</b><br>
+                    Pedro Ruiz - the creator of original 'The Last Mission' game and OperaSoft founder<br>
+                    Dmitry Smagin - main coding<br>
+                    Alexey Pavlov - additional coding and gfx, porting to iOS devices<br>
+                    Mark Braga - music and sfx<br>
+                </p>
+                <p>
+                    <b>Downloads</b><br>
+                    <a href="http://sourceforge.net/projects/lastmission/files/last-mission-0.8/last-mission-win-0.8.zip/download">last-mission-win-0.8.zip</a>
+                </p>
+            </div>
+        </div>
+        </div>
+
+        <footer>
+        </footer>
+
+        <script>
+            window.addEventListener('resize', function(event) {
+                if (window.innerWidth <= 960) {
+                    document.querySelectorAll('.panel').forEach((e) => {
+                        e.classList.add('panel_column');
+                    });
+                } else {
+                    document.querySelectorAll('.panel').forEach((e) => {
+                        e.classList.remove('panel_column');
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>
