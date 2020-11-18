@@ -18,36 +18,35 @@ img {
 
 .panel {
     display: flex;
+    flex-direction: row;
     justify-content: center;
     background-color: white;
 }
 
-.panel_column {
-    flex-direction: column;
-}
-
-.left_panel {
+.left_panel, .right_panel {
     border: 1px solid lightgray;
-}
-
-/* added to left_panel */
-.panel_column > .left_panel {
-    white-space: nowrap;
-    overflow-x: scroll;
-}
-
-.panel_column > .left_panel > img {
-    display: inline-block;
 }
 
 .left_panel > img {
     margin: 10px;
 }
 
-.right_panel {
-    border: 1px solid lightgray;
-}
-
 .description {
     padding: 10px;
 }
+
+@media (max-width: 960px) {
+    .panel {
+        flex-direction: column;
+    }
+
+    .panel > .left_panel {
+        white-space: nowrap;
+        overflow-x: scroll;
+    }
+
+    .panel > .left_panel > img {
+        display: inline-block;
+    }
+}
+
