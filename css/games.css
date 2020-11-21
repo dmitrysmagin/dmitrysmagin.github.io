@@ -10,8 +10,8 @@ body {
 }
 
 img {
-    max-width: 320px;
-    display: block;
+    width: 320px;
+    display: inline-block;
     margin-left: auto;
     margin-right: auto;
 }
@@ -19,16 +19,19 @@ img {
 .panel {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    /*justify-content: center;*/
     background-color: white;
+}
+
+.left_panel {
+    min-width: 336px; /* 320px for image and + 16 for scroller */
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .left_panel, .right_panel {
     border: 1px solid lightgray;
-}
-
-.left_panel > img {
-    margin: 10px;
+    max-height: 614px;
 }
 
 .description {
@@ -43,10 +46,7 @@ img {
     .panel > .left_panel {
         white-space: nowrap;
         overflow-x: scroll;
-    }
-
-    .panel > .left_panel > img {
-        display: inline-block;
+        overflow-y: hidden;
     }
 }
 
