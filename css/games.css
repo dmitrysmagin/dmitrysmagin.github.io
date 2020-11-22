@@ -19,19 +19,19 @@ img {
 .panel {
     display: flex;
     flex-direction: row;
-    /*justify-content: center;*/
+    /* justify-content: center; */
     background-color: white;
+    max-height: inherit;
 }
 
 .left_panel {
-    min-width: 336px; /* 320px for image and + 16 for scroller */
+    max-width: 336px; /* 320px for image and + 16 for scroller */
     overflow-x: hidden;
     overflow-y: scroll;
 }
 
 .left_panel, .right_panel {
     border: 1px solid lightgray;
-    max-height: 614px;
 }
 
 .description {
@@ -41,9 +41,11 @@ img {
 @media (max-width: 960px) {
     .panel {
         flex-direction: column;
+        max-height: unset;
     }
 
     .panel > .left_panel {
+        max-width: unset;
         white-space: nowrap;
         overflow-x: scroll;
         overflow-y: hidden;
