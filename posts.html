@@ -57,7 +57,9 @@
         <script src="./js/marked.min.js"></script>
         <script>
             function route(e) {
-                showMD('./posts/' + window.location.hash.slice(1));
+                // TODO: add more error-checking
+                window.location.hash.slice(1).length &&
+                    showMD('./posts/' + window.location.hash.slice(1));
                 // clear # from url
                 //history.pushState(null, null, ' ');
             }
