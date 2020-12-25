@@ -69,9 +69,16 @@
 
             function showMD(mdPath) {
                 fetch(mdPath).then((response) => {
+                    if (!response.ok)
+                        throw new Error('not ok');
                     response.text().then((text) => {
                         document.getElementById('content').innerHTML = marked(text);
                     });
+                }).catch((error) => {
+                    console.error('Fetch error:', error);
+                    document.getElementById('content').innerHTML = '';
+                    window.location.hash = '';
+                    window.history.pushState(null, null, ' ');
                 });
             }
         </script>
