@@ -11,20 +11,22 @@ body {
 
 img {
     width: 320px;
-    display: inline-block;
+    /*display: inline-block;
     margin-left: auto;
-    margin-right: auto;
+    margin-right: auto;*/
 }
 
 .panel {
     display: flex;
     flex-direction: row;
-    /* justify-content: center; */
+    justify-content: stretch;
     background-color: white;
-    /* max-height: 840px; */
+    max-height: 930px;
+    width: inherit;
 }
 
 .left_panel {
+    flex-shrink: 0;
     max-width: 336px; /* 320px for image and + 16 for scroller */
     overflow-x: hidden;
     overflow-y: scroll;
@@ -32,6 +34,11 @@ img {
 
 .left_panel, .right_panel {
     border: 1px solid lightgray;
+}
+
+.right_panel {
+    width: -webkit-fill-available;
+    /* overflow-y: hidden; */
 }
 
 .description {
@@ -45,10 +52,15 @@ img {
     }
 
     .panel > .left_panel {
+        flex-shrink: 1;
         max-width: unset;
         white-space: nowrap;
         overflow-x: scroll;
         overflow-y: hidden;
+    }
+
+    .panel > .right_panel {
+        overflow-y: unset;
     }
 }
 
