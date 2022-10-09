@@ -1,6 +1,0 @@
-hakyll
-*.hi
-*.o
-_site
-_cache
-cabal-dev
