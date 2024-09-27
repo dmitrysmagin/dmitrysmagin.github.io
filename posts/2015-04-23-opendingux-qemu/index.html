@@ -1,64 +1,207 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dingoo A320 OpenDingux emulation in Qemu</title><link href="https://dmitrysmagin.github.io/posts/2015-04-23-opendingux-qemu/" rel="canonical"><link rel="stylesheet" href="/_elderjs/assets/svelte-e20139a5.css" media="all"><style></style></head><body class="posts"><header><nav class="svelte-4off02"><ul class="menu svelte-4off02"><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/">Home</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/games/">Games</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/posts/">Articles</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/webdemos/">Web Demos</a></li></ul></nav></header><main class="container svelte-4off02"><section id="articles"><header></header><article id="content"><h1 id="dingoo-a320-opendingux-emulation-in-qemu">Dingoo a320: OpenDingux emulation in Qemu</h1><p>The title of this article is not quite correct.</p><p>What qemu does emulate is mips Malta board which exists in <a href="http://www.linux-mips.org/wiki/MIPS_Malta" target="_blank">silicon</a> and can host several 32 and 64 bit mips-compatible processors both BIG or LITTLE endian. Hardware-wise it is completely different from jz47xx SoCs with different memory map and additional hardware. This means that only Malta kernel could be used in qemu and not Dingoo a320 or GCW Zero one. Of course, this kernel's settings could be tweaked according to the situation.</p><p>At the same time no one forbids to use any rootfs with Malta kernel and Dingoo a320's rootfs could be used as well, of course with minor tweaking for qemu's specifics. This allows to run any software compiled for Dingoo a320 OpenDingux as-is without recompilation. There are restrictions though: software must be generic and must use common linux kernel interfaces and devices. So, programs using MXU simd extension or non-standard devices won't work and probably crash.</p><p>The following text could be interesting for developers who would like to test the behavior of their applications in OpenDingux or debug them in a more comfortable way than with real devices.</p><p>From the point of view of the text above, this is not even an OpenDingux emulation but rather a fair OpenDingux port for Malta board being run inside qemu.</p><p><em>Note: When 'rootfs' is mentioned here, it's about Dingoo a320 OpenDingux rootfs (cpu: mips32 r1 soft-float) if the contrary is not explicitly stated.</em></p><h2 id="building-up-a-modified-malta-kernel">Building up a modified Malta kernel</h2><p>First a kernel should be prepared which is a slightly modified Malta kernel. The following implies that you have mipsel toolchain located at /opt otherwise download from <a href="http://www.treewalker.org/opendingux/opendingux-toolchain.2012-06-16.tar.bz2" target="_blank">here</a> and unpack to /opt.</p><pre><code>> git clone -b jz-3.16-qemu  https://github.com/dmitrysmagin/linux.git
-> cd linux
-> export ARCH=mips
-> export CROSS_COMPILE=/opt/opendingux-toolchain/usr/bin/mipsel-linux-
-> make gcw0-qemu_defconfig
-> make
-</code></pre><p>Despite the name 'gcw-qemu_defconfig' it has little to do with GCW Zero hardware. In fact it's a greatly reduced 'malta_defconfig' with some elements needed for OpenDingux:</p><ul><li><a href="https://github.com/dmitrysmagin/linux-gcw0/commit/0a2b8cb9e20354821c4830b1116d0dfb87afa8e1" target="_blank">Patch</a> which allows i8042 serial controller to properly enable on emulated Malta board. This makes AT standard keyboard work in qemu. For some reason this is missing from mainline kernel, see related <a href="http://patchwork.linux-mips.org/patch/6419/" target="_blank">discussion</a>.</li><li><a href="https://github.com/dmitrysmagin/linux-gcw0/commit/b3570be20f77fad5da056c68ed9379fb59997e40" target="_blank">Patch</a> that makes cirrusfb driver behave closer to Dingoo a320 driver. Double buffering and vsync are not supported but applications that rely on them will run just fine. If an application requests a resolution that is different from 320x240, cirrusfb just sets requested resolution as-is without rescaling.</li><li>Using initramfs with device tree in tree.txt and <a href="https://github.com/pcercuei/mininit" target="_blank">mininit</a>.</li><li>Unused hardware is eliminated from defconfig, some other drivers are built statically.</li><li>Kernel command line is hardcoded to: <code>CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60</code></li></ul><p>After compilation is complete the kernel image is located at current directory: ./vmlinux This kernel can run both modified Dingoo a320's rootfs and GCW Zero's rootfs.</p><h2 id="building-up-opendingux-rootfs-with-buildroot">Building up OpenDingux rootfs with buildroot</h2><p>Second a rootfs image is needed, and buildroot system is used for creating it. In this case a slightly modified OpenDingux rootfs for Dingoo a320 is used. This means that it can also be used with Dingoo a380, Ritmix RZX50 and qemu, and all binaries compiled for Dingoo a320 OpenDingux could be runned as-is.</p><pre><code>> git clone -b opendingux-2012.11 https://github.com/dmitrysmagin/opendingux-buildroot.git
-> cd opendingux-buildroot
-> make a380_defconfig
-> make
-</code></pre><p>After some hours of work if no error, the file we need will be located at output/images/rootfs.squashfs</p><h2 id="preparing-a-disk-image">Preparing a disk image</h2><p>Historically Dingux and OpenDingux ran on external sd-card of Dingoo a320 allowing a dualboot between native OS and Dingux/OpenDingux. For simplification kernel and rootfs images were placed on FAT partition of the sd-card and additional software went to 'local' directory, thus typical dir structure looked like: local/bin, local/etc, local/home, local/sbin.</p><p>When booting Dingux/OpenDingux sd-card partition was mounted as /boot, then rootfs was mounted on / (and rootfs had an additional symlink /usr/local => /boot/local).</p><p>To emulate this behavior a disk image with similar layout must be created.</p><pre><code>> dd if=/dev/zero of=512M bs=1M count=512
-> mkdosfs 512M
-> sudo mount 512M /mnt/
-> sudo cp rootfs.squashfs /mnt/
-> sudo mkdir /mnt/local /mnt/local/apps /mnt/local/home /mnt/local/etc
-> # copy some more software to /mnt/local/apps and unmount
-> sudo umount /mnt/
-</code></pre><p>Note that kernel is compiled with the following built-in command line:</p><pre><code>CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60"
-</code></pre><h2 id="running-qemu-on-linux-host">Running qemu on Linux host</h2><p>Qemu should be already installed on your system otherwise do</p><pre><code>> sudo apt-get install qemu
-</code></pre><p>At the time of writing, the latest version is 2.2.0 but no harm if an older one is used (at least 1.3.0 worked fine). Now it's time to burst into action. Typical script to run qemu would look like:</p><pre><code>#!/bin/sh
-
-MACHINE="-M malta -m 256"
-FIRMWARE="-kernel vmlinux -hda 512M"
-HARDWARE="-sdl -soundhw ac97 -k en-us -rtc clock=vm"
-NETWORK="-net nic,model=e1000 -net user"
-SERIAL="-serial stdio -monitor none"
-
-qemu-system-mipsel $MACHINE $FIRMWARE $HARDWARE $NETWORK $SERIAL
-
-</code></pre><p>The explanation is obvious: <code>-M malta -m 256</code> for Malta board with 256 megabytes of RAM. <code>-kernel vmlinux -hda 512M</code> for the generated kernel and disk image, <code>-serial stdio</code> for redirecting serial output to console, other settings for enabling sound, keyboard and network card. If no error, the kernel booting log will immediately appear which ends with login prompt. Type 'root' to log in.</p><pre><code>opendingux:/boot/local/home #
-</code></pre><p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-02.png" alt="Running Qemu on Linux"></p><p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-03.png" alt="Sound card as AlsaMixer sees it. Note that sound is disabled on each boot,
-so run AlsaMixer to fix it."></p><p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-04.png" alt="System Info reporting"></p><p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-05.png" alt="Let's play some Giana Sisters"></p><h2 id="running-qemu-on-windows-host">Running qemu on Windows host</h2><p>Using qemu on Windows is somewhat tricky, and some parameters should be set in a weird way. Latest Qemu 2.2.0 binary could be downloaded <a href="http://lassauge.free.fr/qemu/release/Qemu-2.2.0-windows.zip" target="_blank">here</a></p><p>Here's the example of run.bat:</p><pre><code>@CLS
-set PORTFWD=hostfwd=tcp::21-:21,hostfwd=tcp::22-:22,hostfwd=tcp::23-:23
-
-set MACHINE=-M malta -m 256
-set FIRMWARE=-kernel vmlinux -hda 512M
-set HARDWARE=-sdl -soundhw ac97 -k en-us -rtc clock=vm
-set NETWORK=-net nic,model=e1000 -net user,%PORTFWD%
-set SERIAL=-serial telnet:127.0.0.1:5555,server,nowait
-
-set SETTINGS=%MACHINE% %FIRMWARE% %HARDWARE% %NETWORK% %SERIAL%
-
-qemu-system-mipselw -L BIOS %SETTINGS%
-</code></pre><p>Note that the combination of <code>-sdl -k en-us</code> is very important. If you omit one part you'll happen to have non-working arrow keys. <code>-sdl</code> option instructs to use SDL for video and input (default is GTK) and <code>-k en-us</code> forces US key layout.</p><p>The other annoying thing is Windows console (cmd.exe) which doesn't work right with escape sequences. Moreover, SDL.dll completely hijacks the stdio output and redirects it to a file stdio.txt, so using -serial stdio is impossible.</p><p>That's why a special redirection is used: <code>-serial telnet:127.0.0.1:5555,server,nowait</code> which means that serial will be fed to localhost on port 5555 using qemu as server and qemu will not wait for connection.</p><p>This trick works on Linux hosts as well and using <code>telnet localhost 5555</code> is possible to access to serial output but it's fairly overcomplicating since usual stdio is just fine.</p><p><img src="/files/2015-04-23-opendingux-qemu/qemu-win1.png" alt="Qemu runs on Windows and scales up gmenu2x"></p><p><img src="/files/2015-04-23-opendingux-qemu/qemu-win2.png" alt="System Info shows MIPS Malta processor"></p><h2 id="setting-up-putty-to-catch-serial-output-from-qemu">Setting up Putty to catch serial output from qemu</h2><p>To catch the redirected serial one would use a simple Putty application, download is <a href="http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe" target="_blank">here</a></p><p>First run qemu, then putty. Set Host Name to localhost, Port to 5555, Connection type to telnet and Saved Sessions to 'telnet' or any other name. Press Save and you are done. Optionally, Window -> Translation -> Remote character set could be set to UTF-8. Double click on the 'telnet' and press any key on black screen. Normally, there would be some output.</p><p><img src="/files/2015-04-23-opendingux-qemu/qemu-win3.png" alt="Setting up Putty for qemu"></p><p><img src="/files/2015-04-23-opendingux-qemu/qemu-win4.png" alt="Character encoding"></p><p><img src="/files/2015-04-23-opendingux-qemu/qemu-win5.png" alt="Putty connected to qemu"></p><h2 id="network-operation-on-linux-and-windows-hosts">Network operation on Linux and Windows hosts</h2><p>On both hosts network is run in user mode by passing '-net nic,model=e1000 -nic user' switches. This is so called 'user' mode when guest and host systems are seen as one entity so compicated routing and host-guest interaction is impossible.</p><p>However, it's enought to interact with remote machines.</p><pre><code>opendingux:/boot/local/home # ifconfig
-eth0      Link encap:Ethernet  HWaddr 52:54:00:12:34:56
-          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:2 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:2 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:1180 (1.1 KiB)  TX bytes:656 (656.0 B)
-
-lo        Link encap:Local Loopback
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          UP LOOPBACK RUNNING  MTU:65536  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:0
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-opendingux:/boot/local/home #
-</code></pre><p>DNS should be running at 10.0.2.3, so it's possible to access remote servers from guest using ordinary urls; such tools like ssh/sftp and wget work flawlessly.</p><p>It's even possible to access from guest to host using ssh/sftp, but this works on Linux hosts only:</p><pre><code>opendingux:/boot/local/home # sftp username@10.0.2.2
-</code></pre><p>Note, that vice-versa, i.e. connecting from host to guest is not possible without special network settings.</p><h2 id="using-host-directory-as-a-virtual-disk">Using host directory as a virtual disk</h2><p>To facilitate file sharing between host and guest qemu has a special option to mount host dir as virtual FAT partition. This is especially useful for Windows host which doesn't have tools to manipulate fs images:</p><pre><code>-hdb fat:rw:dirname
-</code></pre><p>This has a restriction though: directory has to fit to FAT16 capacity (~ 516.06 MB). After booting this directory will be visible as /dev/sdb1 device mounted on /media/sdb1 visible from gmenu2x Explorer or DinguxCommander.</p><h2 id="precompiled-qemu-binaries-for-windows">Precompiled qemu binaries for Windows</h2><p><a href="http://lassauge.free.fr/qemu/QEMU_on_Windows.html" target="_blank">Link 1</a></p><p><a href="http://www.omledom.com/" target="_blank">Link 2</a></p><p><a href="http://qemu.weilnetz.de/" target="_blank">Link 3</a></p></article></section></main><footer class="footer svelte-4off02">Built with ❤ and <a href="https://elderguide.com/tech/elderjs/" class="svelte-4off02">Elder.js</a></footer></body></html>
+<!DOCTYPE html><html lang="en"> <head><title>{Posts - Dingoo A320 OpenDingux emulation in Qemu}</title><meta charset="UTF-8"><meta name="description" content="Astro description"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v4.15.7"><style>body{margin:auto;font-size:17px;line-height:1.4em;color:#06395a;border-top:10px solid #06395a;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,system-ui,sans-serif;font-weight:500;background:#f4f7fb}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid black;border-bottom:1px solid black}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;background-color:#f4f7fb;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:visited,nav a:link{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;color:#333;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content table th,#content #content table td{padding:6px 13px;border:1px solid #c3c8cc}#content table tr:nth-child(2n),#content table thead tr{background-color:#d4d9dd}
+</style></head> <body> <header> <nav> <ul class="menu"> <li><a class="menu-item" href="/">Home</a></li> <li><a class="menu-item" href="/games/">Games</a></li> <li><a class="menu-item" href="/posts/">Articles</a></li> <li><a class="menu-item" href="/webdemos/">Web Demos</a></li> </ul> </nav> </header> <main id="content" class="container">  <h1 id="dingoo-a320-opendingux-emulation-in-qemu">Dingoo a320: OpenDingux emulation in Qemu</h1>
+<p>The title of this article is not quite correct.</p>
+<p>What qemu does emulate is mips Malta board which exists in
+<a href="http://www.linux-mips.org/wiki/MIPS_Malta">silicon</a> and can host several 32 and 64 bit
+mips-compatible processors both BIG or LITTLE endian. Hardware-wise it is completely
+different from jz47xx SoCs with different memory map and additional hardware.
+This means that only Malta kernel could be used in qemu and not Dingoo a320 or GCW Zero one.
+Of course, this kernel’s settings could be tweaked according to the situation.</p>
+<p>At the same time no one forbids to use any rootfs with Malta kernel and Dingoo a320’s
+rootfs could be used as well, of course with minor tweaking for qemu’s specifics.
+This allows to run any software compiled for Dingoo a320 OpenDingux as-is without
+recompilation. There are restrictions though: software must be generic and must
+use common linux kernel interfaces and devices. So, programs using MXU simd extension
+or non-standard devices won’t work and probably crash.</p>
+<p>The following text could be interesting for developers who would like to test the behavior
+of their applications in OpenDingux or debug them in a more comfortable way than with
+real devices.</p>
+<p>From the point of view of the text above, this is not even an OpenDingux emulation
+but rather a fair OpenDingux port for Malta board being run inside qemu.</p>
+<p><em>Note: When ‘rootfs’ is mentioned here, it’s about Dingoo a320 OpenDingux rootfs
+(cpu: mips32 r1 soft-float) if the contrary is not explicitly stated.</em></p>
+<h2 id="building-up-a-modified-malta-kernel">Building up a modified Malta kernel</h2>
+<p>First a kernel should be prepared which is a slightly modified Malta kernel.
+The following implies that you have mipsel toolchain located
+at /opt otherwise download from <a href="http://www.treewalker.org/opendingux/opendingux-toolchain.2012-06-16.tar.bz2">here</a> and unpack to /opt.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> git clone -b jz-3.16-qemu  https://github.com/dmitrysmagin/linux.git</span></span>
+<span class="line"><span>> cd linux</span></span>
+<span class="line"><span>> export ARCH=mips</span></span>
+<span class="line"><span>> export CROSS_COMPILE=/opt/opendingux-toolchain/usr/bin/mipsel-linux-</span></span>
+<span class="line"><span>> make gcw0-qemu_defconfig</span></span>
+<span class="line"><span>> make</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Despite the name ‘gcw-qemu_defconfig’ it has little to do with GCW Zero hardware. In fact
+it’s a greatly reduced ‘malta_defconfig’ with some elements needed for OpenDingux:</p>
+<ul>
+<li><a href="https://github.com/dmitrysmagin/linux-gcw0/commit/0a2b8cb9e20354821c4830b1116d0dfb87afa8e1">Patch</a>
+which allows i8042 serial controller to properly enable on emulated
+Malta board. This makes AT standard keyboard work in qemu.
+For some reason this is missing from mainline kernel, see related
+<a href="http://patchwork.linux-mips.org/patch/6419/">discussion</a>.</li>
+<li><a href="https://github.com/dmitrysmagin/linux-gcw0/commit/b3570be20f77fad5da056c68ed9379fb59997e40">Patch</a>
+that makes cirrusfb driver behave closer to Dingoo a320 driver.
+Double buffering and vsync are not supported but
+applications that rely on them will run just fine. If an application
+requests a resolution that is different from 320x240, cirrusfb
+just sets requested resolution as-is without rescaling.</li>
+<li>Using initramfs with device tree in tree.txt and <a href="https://github.com/pcercuei/mininit">mininit</a>.</li>
+<li>Unused hardware is eliminated from defconfig, some other drivers are built statically.</li>
+<li>Kernel command line is hardcoded to:
+<code>CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60</code></li>
+</ul>
+<p>After compilation is complete the kernel image is located at current
+directory: ./vmlinux
+This kernel can run both modified Dingoo a320’s rootfs and GCW Zero’s rootfs.</p>
+<h2 id="building-up-opendingux-rootfs-with-buildroot">Building up OpenDingux rootfs with buildroot</h2>
+<p>Second a rootfs image is needed, and buildroot system is used for creating it.
+In this case a slightly modified OpenDingux rootfs for Dingoo a320 is used.
+This means that it can also be used with Dingoo a380, Ritmix RZX50 and qemu, and
+all binaries compiled for Dingoo a320 OpenDingux could be runned as-is.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> git clone -b opendingux-2012.11 https://github.com/dmitrysmagin/opendingux-buildroot.git</span></span>
+<span class="line"><span>> cd opendingux-buildroot</span></span>
+<span class="line"><span>> make a380_defconfig</span></span>
+<span class="line"><span>> make</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>After some hours of work if no error, the file we need will be located at
+output/images/rootfs.squashfs</p>
+<h2 id="preparing-a-disk-image">Preparing a disk image</h2>
+<p>Historically Dingux and OpenDingux ran on external sd-card of Dingoo a320 allowing
+a dualboot between native OS and Dingux/OpenDingux. For simplification kernel and
+rootfs images were placed on FAT partition of the sd-card and additional software
+went to ‘local’ directory, thus typical dir structure looked like: local/bin,
+local/etc, local/home, local/sbin.</p>
+<p>When booting Dingux/OpenDingux sd-card partition was mounted as /boot, then rootfs
+was mounted on / (and rootfs had an additional symlink /usr/local => /boot/local).</p>
+<p>To emulate this behavior a disk image with similar layout must be created.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> dd if=/dev/zero of=512M bs=1M count=512</span></span>
+<span class="line"><span>> mkdosfs 512M</span></span>
+<span class="line"><span>> sudo mount 512M /mnt/</span></span>
+<span class="line"><span>> sudo cp rootfs.squashfs /mnt/</span></span>
+<span class="line"><span>> sudo mkdir /mnt/local /mnt/local/apps /mnt/local/home /mnt/local/etc</span></span>
+<span class="line"><span>> # copy some more software to /mnt/local/apps and unmount</span></span>
+<span class="line"><span>> sudo umount /mnt/</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Note that kernel is compiled with the following built-in command line:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60"</span></span>
+<span class="line"><span></span></span></code></pre>
+<h2 id="running-qemu-on-linux-host">Running qemu on Linux host</h2>
+<p>Qemu should be already installed on your system otherwise do</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> sudo apt-get install qemu</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>At the time of writing, the latest version is 2.2.0 but no harm if an older
+one is used (at least 1.3.0 worked fine).
+Now it’s time to burst into action. Typical script to run qemu would look like:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>#!/bin/sh</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>MACHINE="-M malta -m 256"</span></span>
+<span class="line"><span>FIRMWARE="-kernel vmlinux -hda 512M"</span></span>
+<span class="line"><span>HARDWARE="-sdl -soundhw ac97 -k en-us -rtc clock=vm"</span></span>
+<span class="line"><span>NETWORK="-net nic,model=e1000 -net user"</span></span>
+<span class="line"><span>SERIAL="-serial stdio -monitor none"</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>qemu-system-mipsel $MACHINE $FIRMWARE $HARDWARE $NETWORK $SERIAL</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span></span></span></code></pre>
+<p>The explanation is obvious: <code>-M malta -m 256</code> for Malta board with 256 megabytes of RAM.
+<code>-kernel vmlinux -hda 512M</code> for the generated kernel and disk image,
+<code>-serial stdio</code> for redirecting serial output to console, other settings for enabling
+sound, keyboard and network card. If no error, the kernel booting log will
+immediately appear which ends with login prompt. Type ‘root’ to log in.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/boot/local/home #</span></span>
+<span class="line"><span></span></span></code></pre>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-02.png" alt="Running Qemu on Linux"></p>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-03.png" alt="Sound card as AlsaMixer sees it. Note that sound is disabled on each boot,
+so run AlsaMixer to fix it."></p>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-04.png" alt="System Info reporting"></p>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-05.png" alt="Let&#x27;s play some Giana Sisters"></p>
+<h2 id="running-qemu-on-windows-host">Running qemu on Windows host</h2>
+<p>Using qemu on Windows is somewhat tricky, and some parameters should be set in a weird
+way. Latest Qemu 2.2.0 binary could be downloaded
+<a href="http://lassauge.free.fr/qemu/release/Qemu-2.2.0-windows.zip">here</a></p>
+<p>Here’s the example of run.bat:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>@CLS</span></span>
+<span class="line"><span>set PORTFWD=hostfwd=tcp::21-:21,hostfwd=tcp::22-:22,hostfwd=tcp::23-:23</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>set MACHINE=-M malta -m 256</span></span>
+<span class="line"><span>set FIRMWARE=-kernel vmlinux -hda 512M</span></span>
+<span class="line"><span>set HARDWARE=-sdl -soundhw ac97 -k en-us -rtc clock=vm</span></span>
+<span class="line"><span>set NETWORK=-net nic,model=e1000 -net user,%PORTFWD%</span></span>
+<span class="line"><span>set SERIAL=-serial telnet:127.0.0.1:5555,server,nowait</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>set SETTINGS=%MACHINE% %FIRMWARE% %HARDWARE% %NETWORK% %SERIAL%</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>qemu-system-mipselw -L BIOS %SETTINGS%</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Note that the combination of <code>-sdl -k en-us</code> is very important. If you
+omit one part you’ll happen to have non-working arrow keys. <code>-sdl</code> option
+instructs to use SDL for video and input (default is GTK) and <code>-k en-us</code>
+forces US key layout.</p>
+<p>The other annoying thing is Windows console (cmd.exe) which doesn’t work right with
+escape sequences. Moreover, SDL.dll completely hijacks the stdio output and redirects
+it to a file stdio.txt, so using -serial stdio is impossible.</p>
+<p>That’s why a special redirection is used: <code>-serial telnet:127.0.0.1:5555,server,nowait</code>
+which means that serial will be fed to localhost on port 5555 using qemu as server and
+qemu will not wait for connection.</p>
+<p>This trick works on Linux hosts as well and using
+<code>telnet localhost 5555</code> is possible to access to serial output but it’s fairly
+overcomplicating since usual stdio is just fine.</p>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-win1.png" alt="Qemu runs on Windows and scales up gmenu2x"></p>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-win2.png" alt="System Info shows MIPS Malta processor"></p>
+<h2 id="setting-up-putty-to-catch-serial-output-from-qemu">Setting up Putty to catch serial output from qemu</h2>
+<p>To catch the redirected serial one would use a simple Putty application, download
+is <a href="http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe">here</a></p>
+<p>First run qemu, then putty. Set Host Name to localhost, Port to 5555, Connection type
+to telnet and Saved Sessions to ‘telnet’ or any other name. Press Save and you are done.
+Optionally, Window -> Translation -> Remote character set could be set to UTF-8.
+Double click on the ‘telnet’ and press any key on black screen.
+Normally, there would be some output.</p>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-win3.png" alt="Setting up Putty for qemu"></p>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-win4.png" alt="Character encoding"></p>
+<p><img src="/files/2015-04-23-opendingux-qemu/qemu-win5.png" alt="Putty connected to qemu"></p>
+<h2 id="network-operation-on-linux-and-windows-hosts">Network operation on Linux and Windows hosts</h2>
+<p>On both hosts network is run in user mode by passing ‘-net nic,model=e1000 -nic user’
+switches. This is so called ‘user’ mode when guest and host systems are seen as
+one entity so compicated routing and host-guest interaction is impossible.</p>
+<p>However, it’s enought to interact with remote machines.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/boot/local/home # ifconfig</span></span>
+<span class="line"><span>eth0      Link encap:Ethernet  HWaddr 52:54:00:12:34:56</span></span>
+<span class="line"><span>          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0</span></span>
+<span class="line"><span>          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span></span>
+<span class="line"><span>          RX packets:2 errors:0 dropped:0 overruns:0 frame:0</span></span>
+<span class="line"><span>          TX packets:2 errors:0 dropped:0 overruns:0 carrier:0</span></span>
+<span class="line"><span>          collisions:0 txqueuelen:1000</span></span>
+<span class="line"><span>          RX bytes:1180 (1.1 KiB)  TX bytes:656 (656.0 B)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>lo        Link encap:Local Loopback</span></span>
+<span class="line"><span>          inet addr:127.0.0.1  Mask:255.0.0.0</span></span>
+<span class="line"><span>          UP LOOPBACK RUNNING  MTU:65536  Metric:1</span></span>
+<span class="line"><span>          RX packets:0 errors:0 dropped:0 overruns:0 frame:0</span></span>
+<span class="line"><span>          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0</span></span>
+<span class="line"><span>          collisions:0 txqueuelen:0</span></span>
+<span class="line"><span>          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>opendingux:/boot/local/home #</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>DNS should be running at 10.0.2.3, so it’s possible to access remote servers
+from guest using ordinary urls; such tools like ssh/sftp and wget work
+flawlessly.</p>
+<p>It’s even possible to access from guest to host using ssh/sftp, but this works
+on Linux hosts only:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/boot/local/home # sftp username@10.0.2.2</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Note, that vice-versa, i.e. connecting from host to guest is not possible without
+special network settings.</p>
+<h2 id="using-host-directory-as-a-virtual-disk">Using host directory as a virtual disk</h2>
+<p>To facilitate file sharing between host and guest qemu has a special option
+to mount host dir as virtual FAT partition. This is especially useful for Windows
+host which doesn’t have tools to manipulate fs images:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>-hdb fat:rw:dirname</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>This has a restriction though: directory has to fit to FAT16 capacity (~ 516.06 MB).
+After booting this directory will be visible as /dev/sdb1 device mounted on /media/sdb1
+visible from gmenu2x Explorer or DinguxCommander.</p>
+<h2 id="precompiled-qemu-binaries-for-windows">Precompiled qemu binaries for Windows</h2>
+<p><a href="http://lassauge.free.fr/qemu/QEMU_on_Windows.html">Link 1</a></p>
+<p><a href="http://www.omledom.com/">Link 2</a></p>
+<p><a href="http://qemu.weilnetz.de/">Link 3</a></p>  </main> <footer class="footer">Built with fabulous <a href="https://astro.build/">Astro</a> framework</footer> </body></html>

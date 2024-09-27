@@ -1,47 +1,149 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Установка Hakyll на Debian</title><link href="https://dmitrysmagin.github.io/posts/2014-01-07-Hakyll-Debian/" rel="canonical"><link rel="stylesheet" href="/_elderjs/assets/svelte-e20139a5.css" media="all"><style></style></head><body class="posts"><header><nav class="svelte-4off02"><ul class="menu svelte-4off02"><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/">Home</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/games/">Games</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/posts/">Articles</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/webdemos/">Web Demos</a></li></ul></nav></header><main class="container svelte-4off02"><section id="articles"><header></header><article id="content"><h1 id="установка-hakyll-на-debian">Установка Hakyll на Debian</h1><h1 id="введение">Введение</h1><p>Ниже описывается методика установки и использования системы генерации статических сайтов Hakyll на ЭВМ под управлением Debian Linux.</p><p>См. также <a href="http://habrahabr.ru/post/175877" target="_blank">статью про установку Hakyll для Windows</a>.</p><h1 id="установка-простая-libghc-hakyll-dev">Установка простая: <code>libghc-hakyll-dev</code></h1><p>Для Debian существует пакет <code>libghc-hakyll-dev</code>. Установим данный пакет:</p><pre><code>aptitude install libghc-hakyll-dev
-</code></pre><p>Создадим каркас для минимального сайта:</p><pre><code> $ cp -a /usr/share/hakyll/example/ my-site
-</code></pre><p>Теперь можно перейти к разделу <a href="#mysite" target="_blank">Развёртывание минимального сайта</a></p><h1 id="установка-непростая-cabal">Установка непростая: <code>cabal</code></h1><p>Будем действовать длинным и нудным путём --- при помощи cabal.</p><h3 id="замечание-1">Замечание 1</h3><p>Использование cabal потребует скачивания значительного числа пакетов и их пересборки (как в Gentoo) так что запаситесь терпением.</p><h3 id="замечание-2">Замечание 2</h3><p>Установку пакетов cabal производит по умолчанию в домашний каталог пользователя, то есть пакеты (и в частности hakyll) становятся доступны только пользователю запускавшему cabal.</p><p>При обновлении системных библиотек или компилятора ghc возможно нарушение работы Hakyll --- в этом случае придётся перезапустить процедуру установки при помощи cabal. В случае совсем капитального обновления для возвращения Hakyll работоспособности возможно придётся стереть временные файлы, которые создавались для работы Haskell-программ. Например, каталоги <code>~/.cabal</code> и <code>~/.ghc</code>.</p><h2 id="начальная-установка-на-минимальный-debian">Начальная установка на минимальный Debian</h2><p>Установим компилятор Haskell, систему пакетирования программ на языке Haskell --- cabal, а также alex и happy, чтобы не собирать их при помощи cabal.</p><pre><code> # aptitude install ghc cabal-install libz-dev alex happy
-</code></pre><p>Обновим список пакетов и установим Hakyll:</p><pre><code> $ cabal update
- $ cabal install hakyll
-</code></pre><p>После окончания работы <code>cabal install</code> (эта работа может потребовать десятков минут) нам будет доступен исполняемый файл <code>~/.cabal/bin/hakyll-init</code>.</p><p>Создадим каркас для минимального сайта:</p><pre><code> $ ~/.cabal/bin/hakyll-init my-site
-</code></pre><h1 id="развёртывание-минимального-сайта--mysite">Развёртывание минимального сайта # {#mysite}</h1><p>Собираем исполняемый файл для генератора сайта:</p><pre><code> $ cd my-site
- $ ghc --make site.hs
-</code></pre><p>Для создания новой записи достаточно создать новый файл <code>posts/yyyy-mm-dd-NAME.markdown</code>, где <code>yyyy</code> --- год, <code>mm</code> --- месяц, <code>dd</code> --- день создания записи, а <code>NAME</code> --- короткое имя записи, например, <code>2013-12-23-linux-screen-capture.markdown</code>. Расширение <code>markdown</code> можно сократить до двух букв <code>md</code>.</p><p>Первые строчки файла должны содержать заголовок вида:</p><pre><code>---
-title: Название новой записи
-author: Автор Новой Записи
-published: 2014-01-01T00:00:00Z
-tags: тег 1, тег 2, тег 3
----
-</code></pre><p>Для конвертации страниц в формате Markdown в html-страницы Hakyll использует программу <a href="http://johnmacfarlane.net/pandoc" target="_blank">pandoc</a>. Толковое описание диалекта Markdown, используемого в pandoc, <a href="http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html" target="_blank">тут</a>.</p><p>Для генерации статического сайта необходимо выполнить</p><pre><code> $ ./site build
-</code></pre><p>сгенерированный сайт окажется в каталоге <code>_site</code>, откуда его можно перебросить в место постоянной дислокации.</p><p>Hakyll можно запустить в режиме web-сервера для просмотра сгенерированного сайта:</p><pre><code> $ ./site server
-</code></pre><p>По умолчанию сервер будет доступен по адресу <a href="http://localhost:8000" target="_blank">http://localhost:8000</a>.</p><h1 id="примеры-сайтов-на-hakyll">Примеры сайтов на Hakyll</h1><p>Примеры сайтов на Hakyll <a href="http://jaspervdj.be/hakyll/examples.html" target="_blank">тут</a>.</p><p>На что стоит обратить внимание:</p><ul><li><a href="http://blog.clement.delafargue.name" target="_blank">http://blog.clement.delafargue.name/</a> <a href="https://github.com/divarvel/blog" target="_blank">github sources</a></li><li><a href="http://www.skybluetrades.net/" target="_blank">http://www.skybluetrades.net/</a></li></ul><pre><code>git clone https://github.com/divarvel/blog
-cd blog
-ghc --make hakyll.hs
-./hakyll build
-./hakyll server
-
-ctrl-c
-
-export EDITOR=vi
-
-bash ./new_post.sh
-Post name > test2
-
-mv posts/.2013-12-20-test2.md posts/2013-12-20-test2.md
-
-./hakkyl rebuild
-./hakyll server
-</code></pre><h1 id="настройка-web-сервера">Настройка web-сервера</h1><p>Предположим, что статический сайт, который генерирует hakyll мы будем размещать на выделенном сервере. Создадим для этого на сервере пользователя blog, в домашнем каталоге которого и будем размещать сайт.</p><h2 id="использование-rsync">Использование rsync</h2><p>Будем использовать rsync для быстрого копирования сгенерированного сайта на web-сервер. Предположим, что мы находимся в каталоге с исходными текстами нашего блога и только что сгенеририровали статический сайт в каталоге <code>_site</code>. Переправим содержимое <code>_site</code> в одноимённый каталог в домашнем каталоге пользователя blog на web-серевере <code>web.server.to</code>. Используем rsync для ускорения передачи данных:</p><pre><code>rsync -v -az -e ssh --delete _site/ blog@web.server.to:_site
-</code></pre><h2 id="использование-apache">Использование apache</h2><p>Настроим web-сервер apache для хостинга нашего блога. В каталог <code>/etc/apache2/conf.d</code> добавляем файл <code>hakyll_blog.conf</code> со следующим содержимым:</p><pre><code>Alias /myblog /home/blog/_site
-
-&lt;Directory /home/blog/_site>
-        # Allow
-        allow from all
-        order allow,deny
-        # Deny
-        #order deny,allow
-        #deny from all
-        #allow from 127.0.0.1
-&lt;/Directory>
-</code></pre><p>и перезапускам apache.</p><p>Теперь при попытке обратиться по адресу <code>http://web.server.to/myblog</code> в браузере должна показываться главная страница блога.</p><h1 id="примечания">Примечания</h1><p>NB: В Debian имеется пакет <code>cabal-debian</code>.</p><p>NB: При использовании cabal для установки исполняемых программ (alex и happy) возможно стоит выполнить</p><pre><code> $ echo "export PATH=$PATH:~/.cabal/bin" >> .bashrc
-</code></pre><p>и перелогиниться.</p></article></section></main><footer class="footer svelte-4off02">Built with ❤ and <a href="https://elderguide.com/tech/elderjs/" class="svelte-4off02">Elder.js</a></footer></body></html>
+<!DOCTYPE html><html lang="en"> <head><title>{Posts - Установка Hakyll на Debian}</title><meta charset="UTF-8"><meta name="description" content="Astro description"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v4.15.7"><style>body{margin:auto;font-size:17px;line-height:1.4em;color:#06395a;border-top:10px solid #06395a;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,system-ui,sans-serif;font-weight:500;background:#f4f7fb}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid black;border-bottom:1px solid black}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;background-color:#f4f7fb;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:visited,nav a:link{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;color:#333;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content table th,#content #content table td{padding:6px 13px;border:1px solid #c3c8cc}#content table tr:nth-child(2n),#content table thead tr{background-color:#d4d9dd}
+</style></head> <body> <header> <nav> <ul class="menu"> <li><a class="menu-item" href="/">Home</a></li> <li><a class="menu-item" href="/games/">Games</a></li> <li><a class="menu-item" href="/posts/">Articles</a></li> <li><a class="menu-item" href="/webdemos/">Web Demos</a></li> </ul> </nav> </header> <main id="content" class="container">  <h1 id="установка-hakyll-на-debian">Установка Hakyll на Debian</h1>
+<h1 id="введение">Введение</h1>
+<p>Ниже описывается методика установки и использования системы
+генерации статических сайтов Hakyll на ЭВМ под управлением
+Debian Linux.</p>
+<p>См. также <a href="http://habrahabr.ru/post/175877">статью про установку Hakyll для Windows</a>.</p>
+<h1 id="установка-простая-libghc-hakyll-dev">Установка простая: <code>libghc-hakyll-dev</code></h1>
+<p>Для Debian существует пакет <code>libghc-hakyll-dev</code>.
+Установим данный пакет:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>aptitude install libghc-hakyll-dev</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Создадим каркас для минимального сайта:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span> $ cp -a /usr/share/hakyll/example/ my-site</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Теперь можно перейти к разделу
+<a href="#mysite">Развёртывание минимального сайта</a></p>
+<h1 id="установка-непростая-cabal">Установка непростая: <code>cabal</code></h1>
+<p>Будем действовать длинным и нудным путём --- при помощи cabal.</p>
+<h3 id="замечание-1">Замечание 1</h3>
+<p>Использование cabal потребует
+скачивания значительного числа пакетов и их пересборки
+(как в Gentoo) так что запаситесь терпением.</p>
+<h3 id="замечание-2">Замечание 2</h3>
+<p>Установку пакетов cabal производит
+по умолчанию в домашний каталог пользователя, то есть
+пакеты (и в частности hakyll) становятся доступны
+только пользователю запускавшему cabal.</p>
+<p>При обновлении системных библиотек
+или компилятора ghc возможно нарушение работы Hakyll --- в этом
+случае придётся перезапустить процедуру установки при помощи
+cabal. В случае совсем капитального обновления для возвращения
+Hakyll работоспособности возможно придётся стереть временные
+файлы, которые создавались для работы Haskell-программ. Например,
+каталоги <code>~/.cabal</code> и <code>~/.ghc</code>.</p>
+<h2 id="начальная-установка-на-минимальный-debian">Начальная установка на минимальный Debian</h2>
+<p>Установим компилятор Haskell, систему пакетирования
+программ на языке Haskell --- cabal, а также alex и happy,
+чтобы не собирать их при помощи cabal.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span> # aptitude install ghc cabal-install libz-dev alex happy</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Обновим список пакетов и установим Hakyll:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span> $ cabal update</span></span>
+<span class="line"><span> $ cabal install hakyll</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>После окончания работы <code>cabal install</code> (эта работа может
+потребовать десятков минут) нам будет доступен исполняемый файл
+<code>~/.cabal/bin/hakyll-init</code>.</p>
+<p>Создадим каркас для минимального сайта:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span> $ ~/.cabal/bin/hakyll-init my-site</span></span>
+<span class="line"><span></span></span></code></pre>
+<h1 id="развёртывание-минимального-сайта--mysite">Развёртывание минимального сайта # {#mysite}</h1>
+<p>Собираем исполняемый файл для генератора сайта:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span> $ cd my-site</span></span>
+<span class="line"><span> $ ghc --make site.hs</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Для создания новой записи достаточно создать новый файл
+<code>posts/yyyy-mm-dd-NAME.markdown</code>, где
+<code>yyyy</code> --- год, <code>mm</code> --- месяц, <code>dd</code> --- день
+создания записи, а <code>NAME</code> --- короткое имя записи,
+например, <code>2013-12-23-linux-screen-capture.markdown</code>.
+Расширение <code>markdown</code> можно сократить до двух букв <code>md</code>.</p>
+<p>Первые строчки файла должны содержать заголовок вида:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>---</span></span>
+<span class="line"><span>title: Название новой записи</span></span>
+<span class="line"><span>author: Автор Новой Записи</span></span>
+<span class="line"><span>published: 2014-01-01T00:00:00Z</span></span>
+<span class="line"><span>tags: тег 1, тег 2, тег 3</span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Для конвертации страниц в формате Markdown в html-страницы
+Hakyll использует программу <a href="http://johnmacfarlane.net/pandoc">pandoc</a>.
+Толковое описание диалекта Markdown, используемого в pandoc,
+<a href="http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html">тут</a>.</p>
+<p>Для генерации статического сайта необходимо выполнить</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span> $ ./site build</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>сгенерированный сайт окажется в каталоге <code>_site</code>, откуда его
+можно перебросить в место постоянной дислокации.</p>
+<p>Hakyll можно запустить в режиме web-сервера для просмотра
+сгенерированного сайта:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span> $ ./site server</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>По умолчанию сервер будет доступен по адресу <a href="http://localhost:8000">http://localhost:8000</a>.</p>
+<h1 id="примеры-сайтов-на-hakyll">Примеры сайтов на Hakyll</h1>
+<p>Примеры сайтов на Hakyll <a href="http://jaspervdj.be/hakyll/examples.html">тут</a>.</p>
+<p>На что стоит обратить внимание:</p>
+<ul>
+<li><a href="http://blog.clement.delafargue.name">http://blog.clement.delafargue.name/</a> <a href="https://github.com/divarvel/blog">github sources</a></li>
+<li><a href="http://www.skybluetrades.net/">http://www.skybluetrades.net/</a></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>git clone https://github.com/divarvel/blog</span></span>
+<span class="line"><span>cd blog</span></span>
+<span class="line"><span>ghc --make hakyll.hs</span></span>
+<span class="line"><span>./hakyll build</span></span>
+<span class="line"><span>./hakyll server</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>ctrl-c</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export EDITOR=vi</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>bash ./new_post.sh</span></span>
+<span class="line"><span>Post name > test2</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>mv posts/.2013-12-20-test2.md posts/2013-12-20-test2.md</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>./hakkyl rebuild</span></span>
+<span class="line"><span>./hakyll server</span></span>
+<span class="line"><span></span></span></code></pre>
+<h1 id="настройка-web-сервера">Настройка web-сервера</h1>
+<p>Предположим, что статический сайт, который генерирует
+hakyll мы будем размещать на выделенном сервере.
+Создадим для этого на сервере пользователя blog,
+в домашнем каталоге которого и будем размещать сайт.</p>
+<h2 id="использование-rsync">Использование rsync</h2>
+<p>Будем использовать rsync для быстрого копирования сгенерированного
+сайта на web-сервер. Предположим, что мы находимся в каталоге
+с исходными текстами нашего блога и только что сгенеририровали
+статический сайт в каталоге <code>_site</code>. Переправим содержимое
+<code>_site</code> в одноимённый каталог в домашнем каталоге пользователя
+blog на web-серевере <code>web.server.to</code>. Используем rsync
+для ускорения передачи данных:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>rsync -v -az -e ssh --delete _site/ blog@web.server.to:_site</span></span>
+<span class="line"><span></span></span></code></pre>
+<h2 id="использование-apache">Использование apache</h2>
+<p>Настроим web-сервер apache для хостинга нашего блога.
+В каталог <code>/etc/apache2/conf.d</code> добавляем файл <code>hakyll_blog.conf</code>
+со следующим содержимым:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Alias /myblog /home/blog/_site</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&#x3C;Directory /home/blog/_site></span></span>
+<span class="line"><span>        # Allow</span></span>
+<span class="line"><span>        allow from all</span></span>
+<span class="line"><span>        order allow,deny</span></span>
+<span class="line"><span>        # Deny</span></span>
+<span class="line"><span>        #order deny,allow</span></span>
+<span class="line"><span>        #deny from all</span></span>
+<span class="line"><span>        #allow from 127.0.0.1</span></span>
+<span class="line"><span>&#x3C;/Directory></span></span>
+<span class="line"><span></span></span></code></pre>
+<p>и перезапускам apache.</p>
+<p>Теперь при попытке обратиться по адресу <code>http://web.server.to/myblog</code>
+в браузере должна показываться главная страница блога.</p>
+<h1 id="примечания">Примечания</h1>
+<p>NB: В Debian имеется пакет <code>cabal-debian</code>.</p>
+<p>NB: При использовании cabal для установки исполняемых программ (alex и happy) возможно стоит выполнить</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span> $ echo "export PATH=$PATH:~/.cabal/bin" >> .bashrc</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>и перелогиниться.</p>  </main> <footer class="footer">Built with fabulous <a href="https://astro.build/">Astro</a> framework</footer> </body></html>

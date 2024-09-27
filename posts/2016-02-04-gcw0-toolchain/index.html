@@ -1,86 +1,171 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compiling mips toolchain with Crosstool-ng under Cygwin</title><link href="https://dmitrysmagin.github.io/posts/2016-02-04-gcw0-toolchain/" rel="canonical"><link rel="stylesheet" href="/_elderjs/assets/svelte-e20139a5.css" media="all"><style></style></head><body class="posts"><header><nav class="svelte-4off02"><ul class="menu svelte-4off02"><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/">Home</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/games/">Games</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/posts/">Articles</a></li><li class="svelte-4off02"><a class="menu-item svelte-4off02" href="/webdemos/">Web Demos</a></li></ul></nav></header><main class="container svelte-4off02"><section id="articles"><header></header><article id="content"><h1 id="compiling-mips-toolchain-with-crosstool-ng-under-cygwin">Compiling mips toolchain with Crosstool-ng under Cygwin</h1><h1 id="steps-to-build-mips-toolchain">Steps to build mips toolchain</h1><h2 id="1-make-windows-ntfs-case-sensitive">1. Make Windows NTFS case sensitive</h2><p>Crosstool-NG needs case sensitive file system. To achieve this set the registry value</p><pre><code>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel\ dword:obcaseinsensitive
-</code></pre><p>to 0 and reboot the machine.</p><h2 id="2-install-cygwin">2. Install Cygwin</h2><p>Cygwin 32-bit is recommended for most compatibility (latest version 2.4.1). Download <a href="http://cygwin.com/setup-x86.exe" target="_blank">setup-x86.exe</a> and run install. The default path is <code>C:\Cygwin</code>.</p><p>Highlight additional packages (dependencies are added automatically):</p><ul><li>gcc-core</li><li>gcc-g++</li><li>gcc-java</li><li>libgcc1</li><li>gperf</li><li>bison</li><li>flex</li><li>wget</li><li>patch</li><li>make</li><li>libtool</li><li>libncurses-devel</li><li>libintl-devel</li><li>texinfo</li><li>git</li><li>zip</li><li>unzip</li><li>help2man</li><li>vim (optional)</li></ul><p>After installation is complete run <code>C:\Cygwin\Cygwin.bat</code> and enter bash shell. It will emulate normal linux shell as close as possible and everything will be operated from there.</p><pre><code>> $ cd /
-> $ mkdir /opt /src
-</code></pre><p>/opt is where final toolchain will be placed, /src is for crosstool-NG sources.</p><h2 id="3-install-crosstool-ng">3. Install crosstool-NG</h2><p>The latest version for the moment is 1.22.0, take it from <a href="http://crosstool-ng.org" target="_blank">the official site</a></p><pre><code>> $ cd /src
-> $ tar -xf crosstool-ng-1.22.0.tar.bz2
-> $ cd crosstool-ng
-> $ ./bootstrap
-> $ ./configure --enable-local
-</code></pre><p>If configure complains about some missing package, run setup-x86.exe again and install it</p><pre><code>> $ make
-
-> # you may have an error (no longer valid for crosstool-ng 1.22.0):
-> # nconf.c: In function «main»
-> # nconf.c:1521:11: Error: lvalue required as left operand of assignment
-> #
-> # just comment out the string 1521 in kconfig/nconf.c:
-> # //ESCDELAY=1;
-> # and type `make` again
-
-> $ make install
-</code></pre><h2 id="4-run-crosstool-ng">4. Run crosstool-NG</h2><pre><code>> $ ./ct-ng menuconfig
-</code></pre><p><strong>Paths and misc options</strong><br><code>CT_PREFIX_DIR="/opt/gcw0-toolchain/usr"</code></p><p><strong>Target options</strong><br>Target architecture=mips<br>Endianness=little endian<br>Bitness=32 bits (default)<br>Tune for cpu=mips32r2<br>Floating point=hardware<br>Abi=o32 (default)<br></p><p><strong>Toolchain options</strong><br>Tuple's vendor string=gcw0<br>Toolchain type=cross (default)<br></p><p><strong>Operating system</strong><br>Target OS=linux<br>Linux kernel=4.3 (default)<br></p><p><strong>Binary utilities</strong><br>binutils version=2.25.1 (default)<br></p><p><strong>C compiler</strong><br>gcc version=5.2.0 (default)<br><code>[*] C++</code><br><code>[ ] Java</code><br><code>[*] Enable GRAPHITE loop optimizations</code><br><code>[*] Enable LTO</code><br></p><p><strong>C library</strong><br>C library=uclibc<br>uclibc version=0.9.33.2<br>Configuration file=uclibc.config (download from <a href="https://github.com/gcwnow/buildroot/raw/opendingux-2014.02/board/opendingux/gcw0/uclibc.config" target="_blank">here</a>)<br>Threading implementations to use=linuxthreads<br><code>[*] Add support for WCHAR</code></p><p>Save an alternate configuration file = gcw0.config and .config</p><h2 id="5-run-build">5. Run build</h2><pre><code>> $ ./ct-ng build
-</code></pre><p>Attention! There may be problems with linux-headers (wrong urls) etc.</p><h2 id="6-adding-libraries">6. Adding libraries</h2><p>After compilation is done you'll get the toolchain in /opt/gcw-toolchain, but this is a minimalistic toolchain without additional libraries like SDL, mikmod etc.</p><p>The right way to populate the toolchain with libraries is to compile them from sources, but in fact all headers and libraries could be just copied from ready-to-use linux toolchain.</p><p>Copy the following text to copy_libs.sh, place it to /opt and run.</p><pre><code>#!/bin/sh
-
-# Assume we are in /opt and GCW Zero toolchain is compiled to
-# /opt/gcw0-toolchain
-
-wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2
-
-mkdir -p tmp
-tar -xf opendingux-gcw0-toolchain.2014-08-20.tar.bz2 -C tmp
-
-CP="cp -dR"
-SRC=tmp/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
-DST=gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot
-
-# Perhaps not needed
-$CP $SRC/../lib $DST
-$CP $SRC/lib $DST
-
-# Copy headers and libs
-$CP $SRC/usr/include $DST/usr
-$CP $SRC/usr/lib $DST/usr
-
-# Fix 'unresolved reference to __tls_get_addr()'
-rm -f $DST/usr/lib/libstdc++*
-
-# Copy *-config scripts
-$CP $SRC/usr/bin/*-config $DST/../../bin
-
-# Create symlinks
-LN="ln -sf"
-NAME=mipsel-gcw0-linux-uclibc-
-LINK=mipsel-linux-
-
-cd gcw0-toolchain/usr/bin
-$LN ${NAME}addr2line	${LINK}addr2line
-$LN ${NAME}ar		${LINK}ar
-$LN ${NAME}as		${LINK}as
-$LN ${NAME}c++		${LINK}c++
-$LN ${NAME}c++filt	${LINK}c++filt
-$LN ${NAME}cc		${LINK}cc
-$LN ${NAME}cpp		${LINK}cpp
-$LN ${NAME}elfedit	${LINK}elfedit
-$LN ${NAME}g++		${LINK}g++
-$LN ${NAME}gcc-ar	${LINK}gcc-ar
-$LN ${NAME}gcc-nm	${LINK}gcc-nm
-$LN ${NAME}gcc-ranlib	${LINK}gcc-ranlib
-$LN ${NAME}gcc		${LINK}gcc
-$LN ${NAME}gcov-tool	${LINK}gcov-tool
-$LN ${NAME}gcov		${LINK}gcov
-$LN ${NAME}gprof	${LINK}gprof
-$LN ${NAME}ld		${LINK}ld
-$LN ${NAME}ld.bfd	${LINK}ld.bfd
-$LN ${NAME}nm		${LINK}nm
-$LN ${NAME}objcopy	${LINK}objcopy
-$LN ${NAME}objdump	${LINK}objdump
-$LN ${NAME}ranlib	${LINK}ranlib
-$LN ${NAME}readelf	${LINK}readelf
-$LN ${NAME}size		${LINK}size
-$LN ${NAME}strings	${LINK}strings
-$LN ${NAME}strip	${LINK}strip
-$LN ${NAME}ldd		${LINK}ldd
-$LN ${NAME}populate	${LINK}populate
-
-cd ../..
-</code></pre></article></section></main><footer class="footer svelte-4off02">Built with ❤ and <a href="https://elderguide.com/tech/elderjs/" class="svelte-4off02">Elder.js</a></footer></body></html>
+<!DOCTYPE html><html lang="en"> <head><title>{Posts - Compiling mips toolchain with Crosstool-ng under Cygwin}</title><meta charset="UTF-8"><meta name="description" content="Astro description"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v4.15.7"><style>body{margin:auto;font-size:17px;line-height:1.4em;color:#06395a;border-top:10px solid #06395a;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,system-ui,sans-serif;font-weight:500;background:#f4f7fb}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid black;border-bottom:1px solid black}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;background-color:#f4f7fb;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:visited,nav a:link{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;color:#333;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content table th,#content #content table td{padding:6px 13px;border:1px solid #c3c8cc}#content table tr:nth-child(2n),#content table thead tr{background-color:#d4d9dd}
+</style></head> <body> <header> <nav> <ul class="menu"> <li><a class="menu-item" href="/">Home</a></li> <li><a class="menu-item" href="/games/">Games</a></li> <li><a class="menu-item" href="/posts/">Articles</a></li> <li><a class="menu-item" href="/webdemos/">Web Demos</a></li> </ul> </nav> </header> <main id="content" class="container">  <h1 id="compiling-mips-toolchain-with-crosstool-ng-under-cygwin">Compiling mips toolchain with Crosstool-ng under Cygwin</h1>
+<h1 id="steps-to-build-mips-toolchain">Steps to build mips toolchain</h1>
+<h2 id="1-make-windows-ntfs-case-sensitive">1. Make Windows NTFS case sensitive</h2>
+<p>Crosstool-NG needs case sensitive file system. To achieve this set the registry value</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel\ dword:obcaseinsensitive</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>to 0 and reboot the machine.</p>
+<h2 id="2-install-cygwin">2. Install Cygwin</h2>
+<p>Cygwin 32-bit is recommended for most compatibility (latest version 2.4.1).
+Download <a href="http://cygwin.com/setup-x86.exe">setup-x86.exe</a>
+and run install. The default path is <code>C:\Cygwin</code>.</p>
+<p>Highlight additional packages (dependencies are added automatically):</p>
+<ul>
+<li>gcc-core</li>
+<li>gcc-g++</li>
+<li>gcc-java</li>
+<li>libgcc1</li>
+<li>gperf</li>
+<li>bison</li>
+<li>flex</li>
+<li>wget</li>
+<li>patch</li>
+<li>make</li>
+<li>libtool</li>
+<li>libncurses-devel</li>
+<li>libintl-devel</li>
+<li>texinfo</li>
+<li>git</li>
+<li>zip</li>
+<li>unzip</li>
+<li>help2man</li>
+<li>vim (optional)</li>
+</ul>
+<p>After installation is complete run <code>C:\Cygwin\Cygwin.bat</code> and enter bash shell.
+It will emulate normal linux shell as close as possible and everything will be
+operated from there.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> $ cd /</span></span>
+<span class="line"><span>> $ mkdir /opt /src</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>/opt is where final toolchain will be placed, /src is for crosstool-NG sources.</p>
+<h2 id="3-install-crosstool-ng">3. Install crosstool-NG</h2>
+<p>The latest version for the moment is 1.22.0, take it from
+<a href="http://crosstool-ng.org">the official site</a></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> $ cd /src</span></span>
+<span class="line"><span>> $ tar -xf crosstool-ng-1.22.0.tar.bz2</span></span>
+<span class="line"><span>> $ cd crosstool-ng</span></span>
+<span class="line"><span>> $ ./bootstrap</span></span>
+<span class="line"><span>> $ ./configure --enable-local</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>If configure complains about some missing package, run setup-x86.exe again and install it</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> $ make</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>> # you may have an error (no longer valid for crosstool-ng 1.22.0):</span></span>
+<span class="line"><span>> # nconf.c: In function «main»</span></span>
+<span class="line"><span>> # nconf.c:1521:11: Error: lvalue required as left operand of assignment</span></span>
+<span class="line"><span>> #</span></span>
+<span class="line"><span>> # just comment out the string 1521 in kconfig/nconf.c:</span></span>
+<span class="line"><span>> # //ESCDELAY=1;</span></span>
+<span class="line"><span>> # and type `make` again</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>> $ make install</span></span>
+<span class="line"><span></span></span></code></pre>
+<h2 id="4-run-crosstool-ng">4. Run crosstool-NG</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> $ ./ct-ng menuconfig</span></span>
+<span class="line"><span></span></span></code></pre>
+<p><strong>Paths and misc options</strong><br>
+<code>CT_PREFIX_DIR="/opt/gcw0-toolchain/usr"</code></p>
+<p><strong>Target options</strong><br>
+Target architecture=mips<br>
+Endianness=little endian<br>
+Bitness=32 bits (default)<br>
+Tune for cpu=mips32r2<br>
+Floating point=hardware<br>
+Abi=o32 (default)<br></p>
+<p><strong>Toolchain options</strong><br>
+Tuple’s vendor string=gcw0<br>
+Toolchain type=cross (default)<br></p>
+<p><strong>Operating system</strong><br>
+Target OS=linux<br>
+Linux kernel=4.3 (default)<br></p>
+<p><strong>Binary utilities</strong><br>
+binutils version=2.25.1 (default)<br></p>
+<p><strong>C compiler</strong><br>
+gcc version=5.2.0 (default)<br>
+<code>[*] C++</code><br>
+<code>[ ] Java</code><br>
+<code>[*] Enable GRAPHITE loop optimizations</code><br>
+<code>[*] Enable LTO</code><br></p>
+<p><strong>C library</strong><br>
+C library=uclibc<br>
+uclibc version=0.9.33.2<br>
+Configuration file=uclibc.config (download from
+<a href="https://github.com/gcwnow/buildroot/raw/opendingux-2014.02/board/opendingux/gcw0/uclibc.config">here</a>)<br>
+Threading implementations to use=linuxthreads<br>
+<code>[*] Add support for WCHAR</code></p>
+<p>Save an alternate configuration file
+= gcw0.config and .config</p>
+<h2 id="5-run-build">5. Run build</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> $ ./ct-ng build</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Attention! There may be problems with linux-headers (wrong urls) etc.</p>
+<h2 id="6-adding-libraries">6. Adding libraries</h2>
+<p>After compilation is done you’ll get the toolchain in /opt/gcw-toolchain, but this is a minimalistic toolchain without additional libraries like SDL, mikmod etc.</p>
+<p>The right way to populate the toolchain with libraries is to compile them from sources, but in fact all headers and libraries could be just copied from ready-to-use linux toolchain.</p>
+<p>Copy the following text to copy_libs.sh, place it to /opt and run.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>#!/bin/sh</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Assume we are in /opt and GCW Zero toolchain is compiled to</span></span>
+<span class="line"><span># /opt/gcw0-toolchain</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>wget http://www.gcw-zero.com/files/opendingux-gcw0-toolchain.2014-08-20.tar.bz2</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>mkdir -p tmp</span></span>
+<span class="line"><span>tar -xf opendingux-gcw0-toolchain.2014-08-20.tar.bz2 -C tmp</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>CP="cp -dR"</span></span>
+<span class="line"><span>SRC=tmp/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot</span></span>
+<span class="line"><span>DST=gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Perhaps not needed</span></span>
+<span class="line"><span>$CP $SRC/../lib $DST</span></span>
+<span class="line"><span>$CP $SRC/lib $DST</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Copy headers and libs</span></span>
+<span class="line"><span>$CP $SRC/usr/include $DST/usr</span></span>
+<span class="line"><span>$CP $SRC/usr/lib $DST/usr</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Fix 'unresolved reference to __tls_get_addr()'</span></span>
+<span class="line"><span>rm -f $DST/usr/lib/libstdc++*</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Copy *-config scripts</span></span>
+<span class="line"><span>$CP $SRC/usr/bin/*-config $DST/../../bin</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Create symlinks</span></span>
+<span class="line"><span>LN="ln -sf"</span></span>
+<span class="line"><span>NAME=mipsel-gcw0-linux-uclibc-</span></span>
+<span class="line"><span>LINK=mipsel-linux-</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>cd gcw0-toolchain/usr/bin</span></span>
+<span class="line"><span>$LN ${NAME}addr2line	${LINK}addr2line</span></span>
+<span class="line"><span>$LN ${NAME}ar		${LINK}ar</span></span>
+<span class="line"><span>$LN ${NAME}as		${LINK}as</span></span>
+<span class="line"><span>$LN ${NAME}c++		${LINK}c++</span></span>
+<span class="line"><span>$LN ${NAME}c++filt	${LINK}c++filt</span></span>
+<span class="line"><span>$LN ${NAME}cc		${LINK}cc</span></span>
+<span class="line"><span>$LN ${NAME}cpp		${LINK}cpp</span></span>
+<span class="line"><span>$LN ${NAME}elfedit	${LINK}elfedit</span></span>
+<span class="line"><span>$LN ${NAME}g++		${LINK}g++</span></span>
+<span class="line"><span>$LN ${NAME}gcc-ar	${LINK}gcc-ar</span></span>
+<span class="line"><span>$LN ${NAME}gcc-nm	${LINK}gcc-nm</span></span>
+<span class="line"><span>$LN ${NAME}gcc-ranlib	${LINK}gcc-ranlib</span></span>
+<span class="line"><span>$LN ${NAME}gcc		${LINK}gcc</span></span>
+<span class="line"><span>$LN ${NAME}gcov-tool	${LINK}gcov-tool</span></span>
+<span class="line"><span>$LN ${NAME}gcov		${LINK}gcov</span></span>
+<span class="line"><span>$LN ${NAME}gprof	${LINK}gprof</span></span>
+<span class="line"><span>$LN ${NAME}ld		${LINK}ld</span></span>
+<span class="line"><span>$LN ${NAME}ld.bfd	${LINK}ld.bfd</span></span>
+<span class="line"><span>$LN ${NAME}nm		${LINK}nm</span></span>
+<span class="line"><span>$LN ${NAME}objcopy	${LINK}objcopy</span></span>
+<span class="line"><span>$LN ${NAME}objdump	${LINK}objdump</span></span>
+<span class="line"><span>$LN ${NAME}ranlib	${LINK}ranlib</span></span>
+<span class="line"><span>$LN ${NAME}readelf	${LINK}readelf</span></span>
+<span class="line"><span>$LN ${NAME}size		${LINK}size</span></span>
+<span class="line"><span>$LN ${NAME}strings	${LINK}strings</span></span>
+<span class="line"><span>$LN ${NAME}strip	${LINK}strip</span></span>
+<span class="line"><span>$LN ${NAME}ldd		${LINK}ldd</span></span>
+<span class="line"><span>$LN ${NAME}populate	${LINK}populate</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>cd ../..</span></span>
+<span class="line"><span></span></span></code></pre>  </main> <footer class="footer">Built with fabulous <a href="https://astro.build/">Astro</a> framework</footer> </body></html>
