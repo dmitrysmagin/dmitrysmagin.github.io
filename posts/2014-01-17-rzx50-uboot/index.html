@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"> <head><title>{Posts - Rimix RZX-50 - Доступ к консоли U-Boot}</title><meta charset="UTF-8"><meta name="description" content="Astro description"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v4.15.7"><style>body{margin:auto;font-size:17px;line-height:1.4em;color:#06395a;border-top:10px solid #06395a;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,system-ui,sans-serif;font-weight:500;background:#f4f7fb}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid black;border-bottom:1px solid black}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;background-color:#f4f7fb;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:visited,nav a:link{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;color:#333;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content table th,#content #content table td{padding:6px 13px;border:1px solid #c3c8cc}#content table tr:nth-child(2n),#content table thead tr{background-color:#d4d9dd}
+<!DOCTYPE html><html lang="en"> <head><title>Posts - Rimix RZX-50 - Доступ к консоли U-Boot</title><meta charset="UTF-8"><meta name="description" content="Astro description"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v5.3.0"><meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview: -1"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.BScVxmeO.js"></script><style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}body{margin:auto;font-size:17px;line-height:1.4em;color:#06395a;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,system-ui,sans-serif;font-weight:500;background:#f4f7fb}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid black;border-bottom:1px solid black}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;background-color:#f4f7fb;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:visited,nav a:link{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;color:#333;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content table th,#content #content table td{padding:6px 13px;border:1px solid #c3c8cc}#content table tr:nth-child(2n),#content table thead tr{background-color:#d4d9dd}
 </style></head> <body> <header> <nav> <ul class="menu"> <li><a class="menu-item" href="/">Home</a></li> <li><a class="menu-item" href="/games/">Games</a></li> <li><a class="menu-item" href="/posts/">Articles</a></li> <li><a class="menu-item" href="/webdemos/">Web Demos</a></li> </ul> </nav> </header> <main id="content" class="container">  <h1 id="rimix-rzx-50-доступ-к-консоли-u-boot">Rimix RZX-50: Доступ к консоли U-Boot</h1>
 <p><em>Аннотация:</em>
 в данной статье рассматривается несложная модификация
@@ -67,8 +67,7 @@ BIOS персонального компьютера. Но по внешнему
 <li>перед тем, как перейти к загрузке ОС U-Boot даёт пользователю
 шанс — на экран выводится сообщение типа</li>
 </ul>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>  Hit any key to stop autoboot:  7</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>  Hit any key to stop autoboot:  7</span></span></code></pre>
 <p>В описанном примере «7» — число секунд, в течении которых U-Boot
 будет ждать от пользователя нажатия на клавишу; в U-Boot этот
 параметр носит название bootdelay. По мере течения времени число
@@ -80,8 +79,7 @@ BIOS персонального компьютера. Но по внешнему
 <p>Заметим, что заводской U-Boot RZX-50 лишает пользователя
 возможности получить доступ к консоли — первое же сообщение
 автозагрузки выглядит так:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>  Hit any key to stop autoboot:  0</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>  Hit any key to stop autoboot:  0</span></span></code></pre>
 <p>Так-что даже зажимание какой-либо клавиши в эмуляторе терминала
 (т.е. символы будут поступать на вход U-Boot непрерывно) с
 последующим сбросом RZX-50 не позволят прервать автозагрузку.
@@ -123,8 +121,7 @@ microSDHC-карта, спрятанная внутри приставки и н
 <span class="line"><span>112 МБ   | 60 МБ         | /usr/mtdblock2, ext3</span></span>
 <span class="line"><span>172 МБ   | 80 МБ         | /usr/mtdblock3, ext3</span></span>
 <span class="line"><span>252 МБ   | 3500 МБ       | /mnt/memory, fat</span></span>
-<span class="line"><span>3752 МБ  | 4,5 МБ        | не используется</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>3752 МБ  | 4,5 МБ        | не используется</span></span></code></pre>
 <p><em>Примечание:</em> Здесь и далее 1 байт = 8 бит, 1 КБ =
 1024 байт, 1 МБ = 1024 КБ.</p>
 <p>Вот структура секции, условно названной в таблице 1
@@ -134,8 +131,7 @@ microSDHC-карта, спрятанная внутри приставки и н
 <span class="line"><span>---------+--------------+-------------</span></span>
 <span class="line"><span>0        | 8 байт       | branch + nop</span></span>
 <span class="line"><span>0x1BE    | 66 байт      | MBR</span></span>
-<span class="line"><span>0x200    | около 952 КБ | U-Boot</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>0x200    | около 952 КБ | U-Boot</span></span></code></pre>
 <p><em>Примечание:</em> размер U-Boot’а приведён ориентировочно на
 основании размера файла mbr-uboot-msc.bin из
 <a href="http://www.ritmixrussia.ru/static/products/4ec1099e96ef4/downloads/RZX-50_fw_0.rar">заводской прошивки для RZX-50 (v.1.0027)</a></p>
@@ -149,8 +145,7 @@ microSDHC-карта, спрятанная внутри приставки и н
 качестве инструкций процессора:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>__start:</span></span>
 <span class="line"><span>    10000080        b       </span></span>
-<span class="line"><span>    00000000        nop</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>    00000000        nop</span></span></code></pre>
 <p><em>Примечание:</em> инструкция nop находится в слоте задержки
 инструкции ветвления и ей нельзя пренебречь.</p>
 <p>Таким образом, для того, чтобы изменить U-Boot достаточно
@@ -160,15 +155,13 @@ microSDHC-карта, спрятанная внутри приставки и н
 <p>Включаем RZX-50 и дожидаемся приглашения dingux в эмуляторе
 терминала:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Welcome to dingux</span></span>
-<span class="line"><span>(none) login:</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>(none) login:</span></span></code></pre>
 <p>Регистрируемся как пользователь root и попадаем в консоль Linux.
 Все описываемые ниже действия будем производить именно в этой консоли.</p>
 <p>Итак, перейдём в /tmp и сохраним оригинальное состояние первого
 мегабайта загрузочной microSDHC-карты в файл uboot.1M.orig:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># cd /tmp</span></span>
-<span class="line"><span># dd if=/dev/mmcblk0 of=uboot.1M.orig bs=1M count=1</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span># dd if=/dev/mmcblk0 of=uboot.1M.orig bs=1M count=1</span></span></code></pre>
 <p><em>Примечание:</em> тут и далее символ # — приглашение dingux,
 вводить его не надо!</p>
 <p>Теперь определим смещение, с которым в uboot.1M.orig
@@ -186,8 +179,7 @@ hexdump + grep RZX-50 тратит около 30 секунд, запасите�
 <span class="line"><span>--</span></span>
 <span class="line"><span>00065610  30 20 30 78 33 30 30 30  30 30 3b 62 6f 6f 74 6d  |0 0x300000;bootm|</span></span>
 <span class="line"><span>00065620  00 62 6f 6f 74 64 65 6c  61 79 3d 30 00 62 61 75  |.bootdelay=0.bau|</span></span>
-<span class="line"><span>00065630  64 72 61 74 65 3d 35 37  36 30 30 00 6c 6f 61 64  |drate=57600.load|</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>00065630  64 72 61 74 65 3d 35 37  36 30 30 00 6c 6f 61 64  |drate=57600.load|</span></span></code></pre>
 <p>Мы получили следующий результат: имеются две строки bootdelay=0:
 одна со смещением 415033 (0×00065539), другая со смещением 415265
 (0×00065621). После ряда экспериментов установлено, что достаточно
@@ -198,39 +190,33 @@ hexdump + grep RZX-50 тратит около 30 секунд, запасите�
 которого должен быть меньше или равен 9. Иначе вывод hexdump может
 быть, например, таким:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>00065520  33 30 30 30 30 30 3b 62  6f 6f 74 6d 00 62 6f 6f  |300000;bootm.boo|</span></span>
-<span class="line"><span>00065530  74 64 65 6c 61 79 3d 30  00 62 61 75 64 72 61 74  |tdelay=0.baudrat|</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>00065530  74 64 65 6c 61 79 3d 30  00 62 61 75 64 72 61 74  |tdelay=0.baudrat|</span></span></code></pre>
 <p>В указанном случае bootdel найти не получится — тогда следует
 поискать строки типа lay=0; за очень небольшое число попыток
 смещения строк bootdelay=0 будут найдены.</p>
 <p>Запомним смещением к bootdelay=0 в переменную BOOTDELAY_OFFSET:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># BOOTDELAY_OFFSET=415033</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># BOOTDELAY_OFFSET=415033</span></span></code></pre>
 <p>Теперь заменим bootdelay=0 на bootdelay=9, используя тот
 незатейливый инструментарий, который заложен в dingux.</p>
 <p>Проверим себя, правильно ли определёно смещение строки bootdelay=0.
 По-прежнему находясь в /tmp выполняем:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># dd skip=$BOOTDELAY_OFFSET if=uboot.1M.orig bs=1 count=11 2>/dev/null</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># dd skip=$BOOTDELAY_OFFSET if=uboot.1M.orig bs=1 count=11 2>/dev/null</span></span></code></pre>
 <p>Если всё вычислено правильно, то на терминал будет выдано bootdelay=0.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># cp uboot.1M.orig uboot.1M.unblocked</span></span>
 <span class="line"><span># echo "bootdelay=9" > tempfile</span></span>
 <span class="line"><span># dd if=tempfile seek=$BOOTDELAY_OFFSET of=uboot.1M.unblocked \</span></span>
 <span class="line"><span>> conv=notrunc bs=1 count=11</span></span>
 <span class="line"><span>11+0 records in</span></span>
-<span class="line"><span>11+0 records out</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>11+0 records out</span></span></code></pre>
 <p>Проверяем внесённые изменения при помощи cmp:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># cmp -l uboot.1M.orig uboot.1M.unblocked</span></span>
-<span class="line"><span>415044  60  71</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>415044  60  71</span></span></code></pre>
 <p>Выдача 415044 63 71 показывает, что файлы отличаются на один байт,
 расположенный со смещением 415044: в первом файле на этом месте 63
 (восьмеричное) (т.е. код символа 0), а во втором 71 (восьмеричное)
 (код символа 9).</p>
 <p>Теперь запишем uboot.1M.unblocked на microSDHC-карту:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># dd if=uboot.1M.unblocked of=/dev/mmcblk0 bs=1M count=1</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># dd if=uboot.1M.unblocked of=/dev/mmcblk0 bs=1M count=1</span></span></code></pre>
 <p>Перегружаем RZX-50 при помощи команды reboot и зажимаем какую-нибудь
 клавишу в эмуляторе терминала (читатель может удивиться — ведь мы
 поставили период задержки автозагрузки в 9 секунд, куда спешить?
@@ -239,8 +225,7 @@ hexdump + grep RZX-50 тратит около 30 секунд, запасите�
 на экземпляре RZX-50 автора), девять секунд пролетаю почти мгновенно.</p>
 <p>Если всё прошло удачно, то попадаем в консоль U-Boot.</p>
 <p>Приглашение U-Boot выглядит так:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>CETUS #</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>CETUS #</span></span></code></pre>
 <p>Список команд U-Boot можно получить при помощи команды help.</p>
 <p>Читатель может спросить, кто такой CETUS? Разгадка очень проста.
 Cetus (в пер. с лат. кит) — макетная плата (англ. reference design),
@@ -254,8 +239,7 @@ RZX-50 мало отличается от Cetus, а раз так, разраб�
 аботает аналогично одноимённой команде Unix — ждёт указанное
 в первом аргументе число секунд, после чего завершает работу.</p>
 <p>Например:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>CETUS # sleep 600</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>CETUS # sleep 600</span></span></code></pre>
 <p>На выполнение sleep 600 U-Boot тратит около одной секунды.
 Подобное пренебрежение точностью отсчёта времени может
 привести к тому, что не будут работать все протоколы,
@@ -277,8 +261,7 @@ RZX-50 мало отличается от Cetus, а раз так, разраб�
 <span class="line"><span>   Verifying Checksum ... OK</span></span>
 <span class="line"><span>   Uncompressing Kernel Image ... OK</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>Starting kernel ...</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>Starting kernel ...</span></span></code></pre>
 <p>О том, как с пользой задействовать U-Boot будет рассказано
 в следующих статьях.</p>
 <h2 id="заключительные-замечания">Заключительные замечания</h2>

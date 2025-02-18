@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /_astro/
+
+User-agent: Googlebot
+Allow: /_astro/
+
+Sitemap: https://dmitrysmagin.gihub.io/sitemap-index.xml
+Host: dmitrysmagin.gihub.io

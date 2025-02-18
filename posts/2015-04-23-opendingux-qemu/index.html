@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"> <head><title>{Posts - Dingoo A320 OpenDingux emulation in Qemu}</title><meta charset="UTF-8"><meta name="description" content="Astro description"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v4.15.7"><style>body{margin:auto;font-size:17px;line-height:1.4em;color:#06395a;border-top:10px solid #06395a;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,system-ui,sans-serif;font-weight:500;background:#f4f7fb}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid black;border-bottom:1px solid black}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;background-color:#f4f7fb;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:visited,nav a:link{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;color:#333;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content table th,#content #content table td{padding:6px 13px;border:1px solid #c3c8cc}#content table tr:nth-child(2n),#content table thead tr{background-color:#d4d9dd}
+<!DOCTYPE html><html lang="en"> <head><title>Posts - Dingoo A320 OpenDingux emulation in Qemu</title><meta charset="UTF-8"><meta name="description" content="Astro description"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v5.3.0"><meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview: -1"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.BScVxmeO.js"></script><style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}body{margin:auto;font-size:17px;line-height:1.4em;color:#06395a;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Open Sans,Helvetica Neue,system-ui,sans-serif;font-weight:500;background:#f4f7fb}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid black;border-bottom:1px solid black}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;background-color:#f4f7fb;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:visited,nav a:link{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;color:#333;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content table th,#content #content table td{padding:6px 13px;border:1px solid #c3c8cc}#content table tr:nth-child(2n),#content table thead tr{background-color:#d4d9dd}
 </style></head> <body> <header> <nav> <ul class="menu"> <li><a class="menu-item" href="/">Home</a></li> <li><a class="menu-item" href="/games/">Games</a></li> <li><a class="menu-item" href="/posts/">Articles</a></li> <li><a class="menu-item" href="/webdemos/">Web Demos</a></li> </ul> </nav> </header> <main id="content" class="container">  <h1 id="dingoo-a320-opendingux-emulation-in-qemu">Dingoo a320: OpenDingux emulation in Qemu</h1>
 <p>The title of this article is not quite correct.</p>
 <p>What qemu does emulate is mips Malta board which exists in
@@ -29,8 +29,7 @@ at /opt otherwise download from <a href="http://www.treewalker.org/opendingux/op
 <span class="line"><span>> export ARCH=mips</span></span>
 <span class="line"><span>> export CROSS_COMPILE=/opt/opendingux-toolchain/usr/bin/mipsel-linux-</span></span>
 <span class="line"><span>> make gcw0-qemu_defconfig</span></span>
-<span class="line"><span>> make</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>> make</span></span></code></pre>
 <p>Despite the name ‘gcw-qemu_defconfig’ it has little to do with GCW Zero hardware. In fact
 it’s a greatly reduced ‘malta_defconfig’ with some elements needed for OpenDingux:</p>
 <ul>
@@ -61,8 +60,7 @@ all binaries compiled for Dingoo a320 OpenDingux could be runned as-is.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> git clone -b opendingux-2012.11 https://github.com/dmitrysmagin/opendingux-buildroot.git</span></span>
 <span class="line"><span>> cd opendingux-buildroot</span></span>
 <span class="line"><span>> make a380_defconfig</span></span>
-<span class="line"><span>> make</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>> make</span></span></code></pre>
 <p>After some hours of work if no error, the file we need will be located at
 output/images/rootfs.squashfs</p>
 <h2 id="preparing-a-disk-image">Preparing a disk image</h2>
@@ -80,15 +78,12 @@ was mounted on / (and rootfs had an additional symlink /usr/local => /boot/local
 <span class="line"><span>> sudo cp rootfs.squashfs /mnt/</span></span>
 <span class="line"><span>> sudo mkdir /mnt/local /mnt/local/apps /mnt/local/home /mnt/local/etc</span></span>
 <span class="line"><span>> # copy some more software to /mnt/local/apps and unmount</span></span>
-<span class="line"><span>> sudo umount /mnt/</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>> sudo umount /mnt/</span></span></code></pre>
 <p>Note that kernel is compiled with the following built-in command line:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60"</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60"</span></span></code></pre>
 <h2 id="running-qemu-on-linux-host">Running qemu on Linux host</h2>
 <p>Qemu should be already installed on your system otherwise do</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> sudo apt-get install qemu</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> sudo apt-get install qemu</span></span></code></pre>
 <p>At the time of writing, the latest version is 2.2.0 but no harm if an older
 one is used (at least 1.3.0 worked fine).
 Now it’s time to burst into action. Typical script to run qemu would look like:</p>
@@ -101,15 +96,13 @@ Now it’s time to burst into action. Typical script to run qemu would look like
 <span class="line"><span>SERIAL="-serial stdio -monitor none"</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>qemu-system-mipsel $MACHINE $FIRMWARE $HARDWARE $NETWORK $SERIAL</span></span>
-<span class="line"><span></span></span>
 <span class="line"><span></span></span></code></pre>
 <p>The explanation is obvious: <code>-M malta -m 256</code> for Malta board with 256 megabytes of RAM.
 <code>-kernel vmlinux -hda 512M</code> for the generated kernel and disk image,
 <code>-serial stdio</code> for redirecting serial output to console, other settings for enabling
 sound, keyboard and network card. If no error, the kernel booting log will
 immediately appear which ends with login prompt. Type ‘root’ to log in.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/boot/local/home #</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/boot/local/home #</span></span></code></pre>
 <p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-02.png" alt="Running Qemu on Linux"></p>
 <p><img src="/files/2015-04-23-opendingux-qemu/qemu-linux-03.png" alt="Sound card as AlsaMixer sees it. Note that sound is disabled on each boot,
 so run AlsaMixer to fix it."></p>
@@ -131,8 +124,7 @@ way. Latest Qemu 2.2.0 binary could be downloaded
 <span class="line"><span></span></span>
 <span class="line"><span>set SETTINGS=%MACHINE% %FIRMWARE% %HARDWARE% %NETWORK% %SERIAL%</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>qemu-system-mipselw -L BIOS %SETTINGS%</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>qemu-system-mipselw -L BIOS %SETTINGS%</span></span></code></pre>
 <p>Note that the combination of <code>-sdl -k en-us</code> is very important. If you
 omit one part you’ll happen to have non-working arrow keys. <code>-sdl</code> option
 instructs to use SDL for video and input (default is GTK) and <code>-k en-us</code>
@@ -181,23 +173,20 @@ one entity so compicated routing and host-guest interaction is impossible.</p>
 <span class="line"><span>          collisions:0 txqueuelen:0</span></span>
 <span class="line"><span>          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>opendingux:/boot/local/home #</span></span>
-<span class="line"><span></span></span></code></pre>
+<span class="line"><span>opendingux:/boot/local/home #</span></span></code></pre>
 <p>DNS should be running at 10.0.2.3, so it’s possible to access remote servers
 from guest using ordinary urls; such tools like ssh/sftp and wget work
 flawlessly.</p>
 <p>It’s even possible to access from guest to host using ssh/sftp, but this works
 on Linux hosts only:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/boot/local/home # sftp username@10.0.2.2</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/boot/local/home # sftp username@10.0.2.2</span></span></code></pre>
 <p>Note, that vice-versa, i.e. connecting from host to guest is not possible without
 special network settings.</p>
 <h2 id="using-host-directory-as-a-virtual-disk">Using host directory as a virtual disk</h2>
 <p>To facilitate file sharing between host and guest qemu has a special option
 to mount host dir as virtual FAT partition. This is especially useful for Windows
 host which doesn’t have tools to manipulate fs images:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>-hdb fat:rw:dirname</span></span>
-<span class="line"><span></span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>-hdb fat:rw:dirname</span></span></code></pre>
 <p>This has a restriction though: directory has to fit to FAT16 capacity (~ 516.06 MB).
 After booting this directory will be visible as /dev/sdb1 device mounted on /media/sdb1
 visible from gmenu2x Explorer or DinguxCommander.</p>
