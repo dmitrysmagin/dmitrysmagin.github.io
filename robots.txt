@@ -4,5 +4,5 @@ Disallow: /_astro/
 User-agent: Googlebot
 Allow: /_astro/
 
-Sitemap: https://dmitrysmagin.gihub.io/sitemap-index.xml
-Host: dmitrysmagin.gihub.io
+Sitemap: https://dmitrysmagin.github.io/sitemap-index.xml
+Host: dmitrysmagin.github.io
