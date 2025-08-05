@@ -1,82 +1,12 @@
-<!DOCTYPE html><html lang="en"> <head><title>Posts - GCW Zero OpenDingux emulation in Qemu</title><meta charset="UTF-8"><meta name="description" content="Astro description"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v5.3.0"><link rel="sitemap" href="/sitemap-index.xml"><meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview: -1"><!--<ClientRouter /> --><style>body{margin:auto;font-size:16.2px;line-height:1.5em;color:#000;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;font-weight:400}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid black;border-bottom:1px solid black}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:visited,nav a:link{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content table th,#content #content table td{padding:6px 13px;border:1px solid #c3c8cc}#content table tr:nth-child(2n),#content table thead tr{background-color:#d4d9dd}
-article[data-astro-cid-egg7nqdx]{max-width:650px;margin:0 auto}
-</style></head> <body> <header> <nav> <ul class="menu"> <li><a class="menu-item" href="/">Home</a></li> <li><a class="menu-item" href="/games/">Games</a></li> <li><a class="menu-item" href="/posts/">Articles</a></li> <li><a class="menu-item" href="/webdemos/">Web Demos</a></li> </ul> </nav> </header> <main id="content" class="container">  <article data-astro-cid-egg7nqdx> <h1 id="gcw-zero-opendingux-emulation-in-qemu">GCW Zero: OpenDingux emulation in Qemu</h1>
-<p>This article deals with running OpenDingux for GCW Zero handheld on top of
-MIPS Malta board emulation in Qemu.
-In the same way RPi is ‘emulated’ using ARM Versatile board (see article
-<a href="https://www.raspberrypi.org/forums/viewtopic.php?f=29&#x26;t=37386">here</a>)</p>
-<p>In both cases it means that no GPU hardware is emulated and programs using
-OpenGL ES or SDL2 libraries most probably won’t work at all. However, most
-other programs not using GPU will work just fine and this could be enough
-for developers to do testing and debugging of their applications.</p>
-<h2 id="preparing-kernel-and-rootfs-images">Preparing kernel and rootfs images</h2>
-<p>Before starting check if you have mipsel toolchain located
-at /opt otherwise download from
-<a href="http://www.treewalker.org/opendingux/opendingux-toolchain.2012-06-16.tar.bz2">here</a>
-and unpack to /opt.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> git clone -b jz-3.16-qemu  https://github.com/dmitrysmagin/linux.git</span></span>
+<!doctype html><html lang="en"><head><title>Posts - GCW Zero OpenDingux emulation in Qemu</title><meta charset="UTF-8"><meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"><meta content="Posts - GCW Zero OpenDingux emulation in Qemu" property="og:title"><meta content="Running OpenDingux on Malta board in QEMU as if it's GCW-Zero" name="description"><meta content="Astro v5.3.0" name="generator"><link href="https://dmitrysmagin.github.io/posts/2015-05-02-gcw0-qemu/" rel="canonical"><meta content="https://dmitrysmagin.github.io/posts/2015-05-02-gcw0-qemu/" property="og:url"><meta content="https://dmitrysmagin.github.io/posts/2015-05-02-gcw0-qemu/" name="twitter:url"><meta content="article" property="og:type"><meta content="https://www.facebook.com/BlueberryConsultants/" property="article:publisher"><meta content="2015-05-02T00:00:00.000Z" property="article:published_time"><meta content="2025-08-05T07:18:22.075Z" property="article:modified_time"><meta content="Dmitry Smagin" property="article:author"><meta content="Dmitry Smagin" name="author"><meta content="summary" name="twitter:card"><meta content="@BBConsultant" name="twitter:site"><meta content="Dmitry's Smagin personal site" property="og:site_name"><meta content="width=device-width" name="viewport"><link href="/favicon.svg" rel="icon" type="image/svg+xml"><link href="/sitemap-index.xml" rel="sitemap"><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview: -1" name="robots"><style>body{margin:auto;font-size:16.2px;line-height:1.5em;color:#000;padding-top:2rem;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;font-weight:400}.container{max-width:900px;margin:0 auto;padding:1rem;overflow:hidden}nav{text-align:center;border-top:1px solid #000;border-bottom:1px solid #000}nav .menu{display:flex;flex-direction:row;justify-content:center}nav .menu li{display:block;color:#47549a;border-radius:8px;transition:color .5s ease,background-color .5s ease}nav .menu li:hover{color:#fff;background-color:#7b7b7b}nav a,nav a:link,nav a:visited{display:block;color:inherit;text-decoration:none;padding:8px 2em;cursor:pointer;user-select:none}.footer{padding:2rem 0;background:#06395a;color:#f4f7fb;text-align:center;font-size:14px}.footer a{color:#f4f7fb}#content{padding-left:10px;padding-right:10px;margin-top:10px;margin-bottom:10px;border:1px solid #e1e4e8;border-radius:6px}#content img{max-width:600px;display:block;margin-left:auto;margin-right:auto;text-align:center}#content h1,#content h2,#content h3,#content h4,#content h5,#content h6{line-height:1.1em;font-family:Lato,Helvetica,Arial,sans-serif}#content p{margin-bottom:1.2em;hyphens:auto;text-align:justify}#content pre{padding:1em}#content h1{font-size:2.2em}#content h2{font-size:1.5em;font-weight:400}#content table{margin-left:auto;margin-right:auto;border-spacing:0;border-collapse:collapse}#content #content table td,#content table th{padding:6px 13px;border:1px solid #c3c8cc}#content table thead tr,#content table tr:nth-child(2n){background-color:#d4d9dd}article[data-astro-cid-egg7nqdx]{max-width:650px;margin:0 auto}</style></head><body><header><nav><ul class="menu"><li><a href="/" class="menu-item">Home</a></li><li><a href="/games/" class="menu-item">Games</a></li><li><a href="/posts/" class="menu-item">Articles</a></li><li><a href="/webdemos/" class="menu-item">Web Demos</a></li></ul></nav></header><main class="container" id="content"><article class="container" data-astro-cid-egg7nqdx><h1 id="gcw-zero-opendingux-emulation-in-qemu">GCW Zero: OpenDingux emulation in Qemu</h1><p>This article deals with running OpenDingux for GCW Zero handheld on top of MIPS Malta board emulation in Qemu. In the same way RPi is ‘emulated’ using ARM Versatile board (see article <a href="https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=37386">here</a>)</p><p>In both cases it means that no GPU hardware is emulated and programs using OpenGL ES or SDL2 libraries most probably won’t work at all. However, most other programs not using GPU will work just fine and this could be enough for developers to do testing and debugging of their applications.</p><h2 id="preparing-kernel-and-rootfs-images">Preparing kernel and rootfs images</h2><p>Before starting check if you have mipsel toolchain located at /opt otherwise download from <a href="http://www.treewalker.org/opendingux/opendingux-toolchain.2012-06-16.tar.bz2">here</a> and unpack to /opt.</p><pre class="astro-code github-dark" data-language="plaintext" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0"><code><span class="line"><span>> git clone -b jz-3.16-qemu  https://github.com/dmitrysmagin/linux.git</span></span>
 <span class="line"><span>> cd linux</span></span>
 <span class="line"><span>> export ARCH=mips</span></span>
 <span class="line"><span>> export CROSS_COMPILE=/opt/opendingux-toolchain/usr/bin/mipsel-linux-</span></span>
 <span class="line"><span>> make gcw0-qemu_defconfig</span></span>
-<span class="line"><span>> make</span></span></code></pre>
-<p>Despite the name ‘gcw-qemu_defconfig’ it has little to do with GCW Zero
-hardware. In fact it’s a greatly reduced ‘malta_defconfig’ with some
-tweakings needed for OpenDingux:</p>
-<ul>
-<li><a href="https://github.com/dmitrysmagin/linux-gcw0/commit/0a2b8cb9e20354821c4830b1116d0dfb87afa8e1">Patch</a>
-which allows i8042 serial controller to properly enable on emulated
-Malta board. This makes AT standard keyboard work in qemu.
-For some reason this is missing from mainline kernel, see related
-<a href="http://patchwork.linux-mips.org/patch/6419/">discussion</a>.</li>
-<li><a href="https://github.com/dmitrysmagin/linux-gcw0/commit/b3570be20f77fad5da056c68ed9379fb59997e40">Patch</a>
-that makes cirrusfb driver behave closer to GCW Zero’s driver.
-Double/triple buffering and IPU rescaling are not supported but
-applications that rely on them will run just fine. If an application
-requests a resolution that is different from 320x240, cirrusfb
-just sets requested resolution as-is without rescaling.</li>
-<li>Using initramfs with device tree in tree.txt and
-<a href="https://github.com/pcercuei/mininit">mininit</a>.</li>
-<li>Unused hardware is eliminated from defconfig, some other drivers are
-built statically.</li>
-<li>Kernel command line is hardcoded to <code>CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60</code></li>
-</ul>
-<p>After compilation is complete the kernel image is located at current
-directory: ./vmlinux</p>
-<hr>
-<p>Buildroot system is used to create rootfs for GCW Zero. Unlike Dingoo a320
-it’s compiled for mips32r2 which supports hardware float.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> git clone -b opendingux-2014.08-qemu https://github.com/dmitrysmagin/buildroot.git</span></span>
+<span class="line"><span>> make</span></span></code></pre><p>Despite the name ‘gcw-qemu_defconfig’ it has little to do with GCW Zero hardware. In fact it’s a greatly reduced ‘malta_defconfig’ with some tweakings needed for OpenDingux:</p><ul><li><a href="https://github.com/dmitrysmagin/linux-gcw0/commit/0a2b8cb9e20354821c4830b1116d0dfb87afa8e1">Patch</a> which allows i8042 serial controller to properly enable on emulated Malta board. This makes AT standard keyboard work in qemu. For some reason this is missing from mainline kernel, see related <a href="http://patchwork.linux-mips.org/patch/6419/">discussion</a>.</li><li><a href="https://github.com/dmitrysmagin/linux-gcw0/commit/b3570be20f77fad5da056c68ed9379fb59997e40">Patch</a> that makes cirrusfb driver behave closer to GCW Zero’s driver. Double/triple buffering and IPU rescaling are not supported but applications that rely on them will run just fine. If an application requests a resolution that is different from 320x240, cirrusfb just sets requested resolution as-is without rescaling.</li><li>Using initramfs with device tree in tree.txt and <a href="https://github.com/pcercuei/mininit">mininit</a>.</li><li>Unused hardware is eliminated from defconfig, some other drivers are built statically.</li><li>Kernel command line is hardcoded to <code>CONFIG_CMDLINE="boot=/dev/sda loop0=/boot/rootfs.squashfs root=/dev/loop0 video=cirrusfb:320x240-16@60</code></li></ul><p>After compilation is complete the kernel image is located at current directory: ./vmlinux</p><hr><p>Buildroot system is used to create rootfs for GCW Zero. Unlike Dingoo a320 it’s compiled for mips32r2 which supports hardware float.</p><pre class="astro-code github-dark" data-language="plaintext" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0"><code><span class="line"><span>> git clone -b opendingux-2014.08-qemu https://github.com/dmitrysmagin/buildroot.git</span></span>
 <span class="line"><span>> cd buildroot</span></span>
 <span class="line"><span>> make gcw0-qemu_defconfig</span></span>
-<span class="line"><span>> make</span></span></code></pre>
-<p>This rootfs is a hacked one which accomodates to Malta platform. The
-differences are:</p>
-<ul>
-<li>Redirect serial output to ttyS0 instead of ttyS2</li>
-<li>Mount /dev/sda as /boot instead of /dev/mmcblk0p1</li>
-<li>Mount /dev/sdb as /media/data instead of /dev/mmcblk0p2</li>
-<li>Mesa3d, etna_viv, SDL2 and Love2d are disabled</li>
-<li>Removed GCW Zero specific patches for SDL (vsync on pan
-and triple buffering)</li>
-</ul>
-<p><em>Note that applications using triple buffering will still work.</em></p>
-<p>After compilation is complete the image is located at
-output/images/rootfs.squashfs</p>
-<h2 id="preparing-disk-images">Preparing disk images</h2>
-<p>Unlike Dingoo a320, OpenDingux is the only operating system for GCW Zero, so
-it’s installed on the internal sd-card. The card is divided into two
-partitions:</p>
-<ul>
-<li>System partition (FAT) which is mounted at /boot. It holds kernel and
-rootfs images and some system files. FAT is chosen to facilitate things
-for Ubiboot.</li>
-<li>User partition (EXT4) which is mounted at /media/data. It holds user
-data and installed applications (either in *.opk binary packages or as-as).</li>
-</ul>
-<p>For the sake of simplicity two separate images could be created which would
-be seen by Malta as /dev/sda and /dev/sdb.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>> # Create system partition, 128 Mb is enough</span></span>
+<span class="line"><span>> make</span></span></code></pre><p>This rootfs is a hacked one which accomodates to Malta platform. The differences are:</p><ul><li>Redirect serial output to ttyS0 instead of ttyS2</li><li>Mount /dev/sda as /boot instead of /dev/mmcblk0p1</li><li>Mount /dev/sdb as /media/data instead of /dev/mmcblk0p2</li><li>Mesa3d, etna_viv, SDL2 and Love2d are disabled</li><li>Removed GCW Zero specific patches for SDL (vsync on pan and triple buffering)</li></ul><p><em>Note that applications using triple buffering will still work.</em></p><p>After compilation is complete the image is located at output/images/rootfs.squashfs</p><h2 id="preparing-disk-images">Preparing disk images</h2><p>Unlike Dingoo a320, OpenDingux is the only operating system for GCW Zero, so it’s installed on the internal sd-card. The card is divided into two partitions:</p><ul><li>System partition (FAT) which is mounted at /boot. It holds kernel and rootfs images and some system files. FAT is chosen to facilitate things for Ubiboot.</li><li>User partition (EXT4) which is mounted at /media/data. It holds user data and installed applications (either in *.opk binary packages or as-as).</li></ul><p>For the sake of simplicity two separate images could be created which would be seen by Malta as /dev/sda and /dev/sdb.</p><pre class="astro-code github-dark" data-language="plaintext" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0"><code><span class="line"><span>> # Create system partition, 128 Mb is enough</span></span>
 <span class="line"><span>> dd if=/dev/zero of=128M bs=1M count=128</span></span>
 <span class="line"><span>> mkdosfs 128M</span></span>
 <span class="line"><span>> sudo mount 128M /mnt/</span></span>
@@ -91,10 +21,7 @@ be seen by Malta as /dev/sda and /dev/sdb.</p>
 <span class="line"><span>> # copy opks to /apps</span></span>
 <span class="line"><span>> sudo cp *.opk /mnt/apps</span></span>
 <span class="line"><span>> sudo umount /mnt/</span></span>
-<span class="line"><span></span></span></code></pre>
-<h2 id="running-on-linux-host">Running on Linux host</h2>
-<p>The typical script to run qemu on Linux looks like:</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>#!/bin/sh</span></span>
+<span class="line"><span></span></span></code></pre><h2 id="running-on-linux-host">Running on Linux host</h2><p>The typical script to run qemu on Linux looks like:</p><pre class="astro-code github-dark" data-language="plaintext" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0"><code><span class="line"><span>#!/bin/sh</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span># Possible values: pa, alsa, sdl, oss, none, wav</span></span>
 <span class="line"><span>export QEMU_AUDIO_DRV=alsa</span></span>
@@ -105,14 +32,7 @@ be seen by Malta as /dev/sda and /dev/sdb.</p>
 <span class="line"><span>NETWORK="-net nic,model=e1000 -net user"</span></span>
 <span class="line"><span>SERIAL="-serial stdio -monitor none"</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>qemu-system-mipsel $MACHINE $FIRMWARE $HARDWARE $NETWORK $SERIAL</span></span></code></pre>
-<p><img src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-01.png" alt=""></p>
-<p><img src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-02.png" alt=""></p>
-<p><img src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-03.png" alt=""></p>
-<p><img src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-07.png" alt=""></p>
-<h2 id="running-on-windows-host">Running on Windows host</h2>
-<p>The typical script to run qemu on Windows looks like (run-gcw0.bat):</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>@cls</span></span>
+<span class="line"><span>qemu-system-mipsel $MACHINE $FIRMWARE $HARDWARE $NETWORK $SERIAL</span></span></code></pre><p><img alt="" src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-01.png"></p><p><img alt="" src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-02.png"></p><p><img alt="" src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-03.png"></p><p><img alt="" src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-07.png"></p><h2 id="running-on-windows-host">Running on Windows host</h2><p>The typical script to run qemu on Windows looks like (run-gcw0.bat):</p><pre class="astro-code github-dark" data-language="plaintext" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0"><code><span class="line"><span>@cls</span></span>
 <span class="line"><span>set PORTFWD=hostfwd=tcp::21-:21,hostfwd=tcp::22-:22,hostfwd=tcp::23-:23</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>@rem Possible values: winwave, dsound, sdl, fmod, none, wav</span></span>
@@ -126,26 +46,7 @@ be seen by Malta as /dev/sda and /dev/sdb.</p>
 <span class="line"><span></span></span>
 <span class="line"><span>set SETTINGS=%MACHINE% %FIRMWARE% %HARDWARE% %NETWORK% %SERIAL%</span></span>
 <span class="line"><span></span></span>
-<span class="line"><span>qemu-system-mipselw -L BIOS %SETTINGS%</span></span></code></pre>
-<p>Note that <code>-sdl</code> parameter forces qemu to avoid using gtk (which is the
-default output for qemu on Windows) and <code>-k en-us</code> instructs to use US
-keyboard layout. If any is omitted the arrow buttons stop working.</p>
-<p>As SDL forcefully catches stdio output to file, serial is redirected to
-localhost:5555.
-<a href="http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe">Putty</a> or similar
-program could be set up to connect to qemu.</p>
-<p>First run qemu, then putty. Set Host Name to localhost, Port to 5555, Connection type
-to telnet and Saved Sessions to ‘telnet’ or any other name. Press Save and you are done.
-Optionally, Window -> Translation -> Remote character set could be set to UTF-8.
-Double click on the ‘telnet’ and press any key on black screen.
-Normally, there would be some output.</p>
-<p><img src="/files/2015-04-23-opendingux-qemu/qemu-win3.png" alt="Setting up Putty for qemu"></p>
-<p><img src="/files/2015-04-23-opendingux-qemu/qemu-win4.png" alt="Character encoding"></p>
-<p><img src="/files/2015-04-23-opendingux-qemu/qemu-win5.png" alt="Putty connected to qemu"></p>
-<h2 id="network">Network</h2>
-<p>Network interfaces are set automatically for eth0. Wi-fi is not available
-because qemu doesn’t emulate any.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/media/data/local/home # ifconfig</span></span>
+<span class="line"><span>qemu-system-mipselw -L BIOS %SETTINGS%</span></span></code></pre><p>Note that <code>-sdl</code> parameter forces qemu to avoid using gtk (which is the default output for qemu on Windows) and <code>-k en-us</code> instructs to use US keyboard layout. If any is omitted the arrow buttons stop working.</p><p>As SDL forcefully catches stdio output to file, serial is redirected to localhost:5555. <a href="http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe">Putty</a> or similar program could be set up to connect to qemu.</p><p>First run qemu, then putty. Set Host Name to localhost, Port to 5555, Connection type to telnet and Saved Sessions to ‘telnet’ or any other name. Press Save and you are done. Optionally, Window -> Translation -> Remote character set could be set to UTF-8. Double click on the ‘telnet’ and press any key on black screen. Normally, there would be some output.</p><p><img alt="Setting up Putty for qemu" src="/files/2015-04-23-opendingux-qemu/qemu-win3.png"></p><p><img alt="Character encoding" src="/files/2015-04-23-opendingux-qemu/qemu-win4.png"></p><p><img alt="Putty connected to qemu" src="/files/2015-04-23-opendingux-qemu/qemu-win5.png"></p><h2 id="network">Network</h2><p>Network interfaces are set automatically for eth0. Wi-fi is not available because qemu doesn’t emulate any.</p><pre class="astro-code github-dark" data-language="plaintext" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0"><code><span class="line"><span>opendingux:/media/data/local/home # ifconfig</span></span>
 <span class="line"><span>eth0      Link encap:Ethernet  HWaddr 52:54:00:12:34:56  </span></span>
 <span class="line"><span>          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0</span></span>
 <span class="line"><span>          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span></span>
@@ -160,10 +61,5 @@ because qemu doesn’t emulate any.</p>
 <span class="line"><span>          RX packets:0 errors:0 dropped:0 overruns:0 frame:0</span></span>
 <span class="line"><span>          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0</span></span>
 <span class="line"><span>          collisions:0 txqueuelen:0 </span></span>
-<span class="line"><span>          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)</span></span></code></pre>
-<p>Sftp or ssh can be used to access remote servers or even you host
-system from OpenDingux (but not vice-versa).</p>
-<p><em>Note: Accessing host doesn’t work if your host is Windows.</em></p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>opendingux:/media/home # # username is your name for host system</span></span>
-<span class="line"><span>opendingux:/media/home # sftp username@10.0.2.2</span></span></code></pre>
-<p><img src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-04.png" alt=""></p> </article>  </main> <footer class="footer">Built with fabulous <a href="https://astro.build/">Astro</a> framework</footer> </body></html> 
+<span class="line"><span>          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)</span></span></code></pre><p>Sftp or ssh can be used to access remote servers or even you host system from OpenDingux (but not vice-versa).</p><p><em>Note: Accessing host doesn’t work if your host is Windows.</em></p><pre class="astro-code github-dark" data-language="plaintext" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0"><code><span class="line"><span>opendingux:/media/home # # username is your name for host system</span></span>
+<span class="line"><span>opendingux:/media/home # sftp username@10.0.2.2</span></span></code></pre><p><img alt="" src="/files/2015-05-02-gcw0-qemu/qemu-gcw0-04.png"></p></article></main><footer class="footer">Built with fabulous <a href="https://astro.build/">Astro</a> framework</footer></body></html>
